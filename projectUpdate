@@ -1,98 +1,112 @@
 #!/usr/bin/python3
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog
+
 from lxml.etree import parse, XMLParser
-from sys import argv
 
-def aoiReplace(template, project):
-    pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
-    tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
-    tAois = pAois
-
-def udtReplace(template, project):
-    save = []
-    for udt in project.iter("DataType"):
-        if udt.attrib['Name'].find("StationData")       != -1:
-            save.append(udt)
-        elif udt.attrib['Name'].find("StationResults")  != -1:
-            save.append(udt)
-
-    pUdts = project.findall("Controller/DataTypes")[0]
-    tUdts = template.findall("Controller/DataTypes")[0]
-    
-    for udt in save:
-        pUdts.append(udt)
-
-    tUdts = pUdts
-
-def checkSA(program, template):
-    for templateProgram in template.iter("Program"):
-        if templateProgram.attrib["Name"].find("CHECK_SA"):
-            replacementProgram = templateProgram
-
-    program = replacementProgram
-
-def powerSupply(program, template):
-    for templateProgram in template.iter("Program"):
-
-    print("powerSupply")
-
-def devicesGeneral(program):
-    print("devicesGeneral")
-
-def plc(program):
-    print("plc")
-
-def operatorInterface(program):
-    print("operatorInterface")
-
-def busStructures(program):
-    print("busStructures")
-
-def safetyUnits(program):
-    print("safetyUnits")
-
-parser = XMLParser(strip_cdata=False, resolve_entities=False)
-
-tTree = parse(argv[1], parser=parser)
-pTree = parse(argv[2], parser=parser)
-
-tRoot = tTree.getroot()
-pRoot = pTree.getroot()
-
-aoiReplace(tRoot, pRoot)
-udtReplace(tRoot, pRoot)
-
-for program in pRoot.iter("Program"):
-    name = program.attrib['Name']
-
-    if name.find("POWER_SUPPLY")        != -1:
-        powerSupply(program, tRoot)
-
-    elif name.find("DEVICES_GENERAL")   != -1:
-        devicesGeneral(program)
-
-    elif name.find("PLC")               != -1:
-        plc(program)
-
-    elif name.find("OPERATOR_INTERFACE")!= -1:
-        operatorInterface(program)
-
-    elif name.find("BUS_STRUCTURES")    != -1:
-        busStructures(program)
- 
-    elif name.find("SAFETY_UNITS")      != -1:
-        safetyUnits(program)
-
-    elif name.find("CHECK_SA")          != -1:
-        checkSA(program, tRoot)
-
-pTree.write(argv[3]+"utf-8", encoding='utf-8', standalone=True)
-
+import sys
 import codecs
-with codecs.open(argv[3]+"utf-8", "r", "utf-8") as sourceFile:
-    with codecs.open(argv[3], "w", "utf-8-sig") as targetFile:
-        contents = sourceFile.read()
-        targetFile.write(contents)
-
 import os
-os.remove(argv[3]+"utf-8")
+
+from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, devicesGeneral, plc, operatorInterface, busStructures, safetyUnits
+
+class projectUpdate(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        grid = QGridLayout()
+        self.setLayout(grid)
+
+        grid.addWidget(QLabel("Project:")   ,0,0)
+        self.projectEntry = QLineEdit()
+        grid.addWidget(self.projectEntry    ,0,1)
+        self.projectButton = QPushButton("...")
+        self.projectButton.clicked.connect(self.openProject)
+        grid.addWidget(self.projectButton   ,0,2)
+
+        grid.addWidget(QLabel("Template:")  ,1,0)
+        self.templateEntry = QLineEdit()
+        grid.addWidget(self.templateEntry   ,1,1)
+        self.templateButton = QPushButton("...")
+        self.templateButton.clicked.connect(self.openTemplate)
+        grid.addWidget(self.templateButton  ,1,2)
+
+        self.updateButton = QPushButton("Update...")
+        self.updateButton.clicked.connect(self.update)
+        grid.addWidget(self.updateButton    ,4,1)
+
+        if len(sys.argv) >= 3:
+            self.openProject(sys.argv[1])
+            self.openTemplate(sys.argv[2])
+            if len(sys.argv) == 4:
+                self.update(sys.argv[3])
+
+        self.show()
+
+    def openProject(self, path=None):
+        if not path: path = QFileDialog.getOpenFileName(self)[0]
+        if path: self.projectEntry.setText(path)
+
+    def openTemplate(self, path=None):
+        if not path: path = QFileDialog.getOpenFileName(self)[0]
+        if path: self.templateEntry.setText(path)
+
+    def update(self, path=None):
+        if not path: path = QFileDialog.getSaveFileName(self)[0]
+        if path:
+            updatedProject = self.main(self.projectEntry.text(), self.templateEntry.text())
+
+            updatedProject.write(path+"utf-8", encoding='utf-8', standalone=True)
+
+            with codecs.open(path+"utf-8", "r", "utf-8") as sourceFile:
+                with codecs.open(path, "w", "utf-8-sig") as targetFile:
+                    contents = sourceFile.read()
+                    targetFile.write(contents)
+
+            os.remove(path+"utf-8")
+            sys.exit()
+
+    def main(self, projectPath, templatePath):
+
+        parser = XMLParser(strip_cdata=False, resolve_entities=False)
+
+        tTree = parse(templatePath, parser=parser)
+        pTree = parse(projectPath, parser=parser)
+
+        tRoot = tTree.getroot()
+        pRoot = pTree.getroot()
+
+        aoiReplace(tRoot, pRoot)
+        udtReplace(tRoot, pRoot)
+
+        for program in pRoot.iter("Program"):
+            name = program.attrib['Name']
+
+            if name.find("POWER_SUPPLY")        != -1:
+                powerSupply(program, tRoot)
+
+            elif name.find("DEVICES_GENERAL")   != -1:
+                devicesGeneral(program)
+
+            elif name.find("PLC")               != -1:
+                plc(program)
+
+            elif name.find("OPERATOR_INTERFACE")!= -1:
+                operatorInterface(program)
+
+            elif name.find("BUS_STRUCTURES")    != -1:
+                busStructures(program)
+         
+            elif name.find("SAFETY_UNITS")      != -1:
+                safetyUnits(program)
+
+            elif name.find("CHECK_SA")          != -1:
+                checkSA(program, tRoot, parser)
+
+        return pTree
+
+app = QApplication(sys.argv)
+masterView = projectUpdate()
+sys.exit(app.exec_())
+
