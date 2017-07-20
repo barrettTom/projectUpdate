@@ -9,7 +9,8 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, devicesGeneral, plc, operatorInterface, busStructures, safetyUnits
+from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply
+from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -83,26 +84,35 @@ class projectUpdate(QWidget):
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
 
-            if name.find("POWER_SUPPLY")        != -1:
-                powerSupply(program, tRoot)
+            if name.find("G0_POWER_SUPPLY")         != -1:
+                powerSupply(program, tRoot, "G0_POWER_SUPPLY")
 
-            elif name.find("DEVICES_GENERAL")   != -1:
-                devicesGeneral(program)
+            elif name.find("PLC")                   != -1:
+                plc(program, tRoot, "PLC")
 
-            elif name.find("PLC")               != -1:
-                plc(program)
-
-            elif name.find("OPERATOR_INTERFACE")!= -1:
-                operatorInterface(program)
-
-            elif name.find("BUS_STRUCTURES")    != -1:
-                busStructures(program)
+            elif name.find("BUS_STRUCTURES")        != -1:
+                busStructures(program, tRoot, "BUS_STRUCTURES")
          
-            elif name.find("SAFETY_UNITS")      != -1:
-                safetyUnits(program)
+            elif name.find("SAFETY_UNITS")          != -1:
+                safetyUnits(program, tRoot, "SAFETY_UNITS")
 
-            elif name.find("CHECK_SA")          != -1:
-                checkSA(program, tRoot, parser)
+            elif name.find("CHECK_SA")              != -1:
+                checkSA(program, tRoot, "CHECK_SA", parser)
+
+            elif name.find("G3_I/O_TEST")              != -1:
+                replaceAllRoutines(program, tRoot, "G3_I/O_TEST")
+
+            elif name.find("G1_DEVICES_GENERAL")       != -1:
+                replaceAllRoutines(program, tRoot, "G1_DEVICES_GENERAL")
+
+            elif name.find("G2_POWER_SUPPLY")       != -1:
+                replaceAllRoutines(program, tRoot, "G2_POWER_SUPPLY")
+
+            elif name.find("G4_OPERATOR_INTERFACE")    != -1:
+                replaceAllRoutines(program, tRoot, "G4_OPERATOR_INTERFACE")
+
+            elif name.find("G9_INTERCONNECTIONS")   != -1:
+                replaceAllRoutines(program, tRoot, "G9_INTERCONNECTIONS")
 
         return pTree
 

@@ -2,10 +2,17 @@
 
 from lxml.etree import tostring, fromstring
 
+def getReplacementProgram(template, find):
+    for templateProgram in template.iter("Program"):
+        if templateProgram.attrib["Name"].find(find) != -1:
+            replacementProgram = templateProgram
+
+    return replacementProgram
+
 def aoiReplace(project, template):
     pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
-    tAois = pAois
+    pAois = tAois
 
 def udtReplace(project, template):
     save = []
@@ -19,14 +26,12 @@ def udtReplace(project, template):
     tUdts = template.findall("Controller/DataTypes")[0]
     
     for udt in save:
-        pUdts.append(udt)
+        tUdts.append(udt)
 
-    tUdts = pUdts
+    pUdts = tUdts
 
-def checkSA(program, template, parser):
-    for templateProgram in template.iter("Program"):
-        if templateProgram.attrib["Name"].find("CHECK_SA") != -1:
-            replacementProgram = templateProgram
+def checkSA(program, template, find, parser):
+    replacementProgram = getReplacementProgram(template, find)
 
     machineNumber = program.attrib["Name"].split("_")[1][:3]
 
@@ -36,22 +41,29 @@ def checkSA(program, template, parser):
 
     program = replacementProgram
 
-def powerSupply(program, template):
-    for templateProgram in template.iter("Program"):
-        if templateProgram.attrib["Name"].find("POWER_SUPPLY") != -1:
-            replacementProgram = templateProgram
+def powerSupply(program, template, find):
+    replacementProgram = getReplacementProgram(template, find)
 
-def devicesGeneral(program):
-    print("devicesGeneral")
+    for routine in program.iter("Routine"):
+        for replacementRoutine in replacementProgram.iter("Routine"):
+            if routine.attrib['Name'] == "R20_Conditions":
+                continue
+            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+                routine = replacementRoutine
 
-def plc(program):
+def replaceAllRoutines(program, template, find):
+    replacementProgram = getReplacementProgram(template, find)
+
+    for routine in program.iter("Routine"):
+        for replacementRoutine in replacementProgram.iter("Routine"):
+            if routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+                routine = replacementRoutine
+    
+def plc(program, template, find):
     print("plc")
 
-def operatorInterface(program):
-    print("operatorInterface")
-
-def busStructures(program):
+def busStructures(program, template, find):
     print("busStructures")
 
-def safetyUnits(program):
+def safetyUnits(program, template, find):
     print("safetyUnits")
