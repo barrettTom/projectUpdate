@@ -1,0 +1,98 @@
+#!/usr/bin/python3
+
+from lxml.etree import parse, XMLParser
+from sys import argv
+
+def aoiReplace(template, project):
+    pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
+    tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
+    tAois = pAois
+
+def udtReplace(template, project):
+    save = []
+    for udt in project.iter("DataType"):
+        if udt.attrib['Name'].find("StationData")       != -1:
+            save.append(udt)
+        elif udt.attrib['Name'].find("StationResults")  != -1:
+            save.append(udt)
+
+    pUdts = project.findall("Controller/DataTypes")[0]
+    tUdts = template.findall("Controller/DataTypes")[0]
+    
+    for udt in save:
+        pUdts.append(udt)
+
+    tUdts = pUdts
+
+def checkSA(program, template):
+    for templateProgram in template.iter("Program"):
+        if templateProgram.attrib["Name"].find("CHECK_SA"):
+            replacementProgram = templateProgram
+
+    program = replacementProgram
+
+def powerSupply(program, template):
+    for templateProgram in template.iter("Program"):
+
+    print("powerSupply")
+
+def devicesGeneral(program):
+    print("devicesGeneral")
+
+def plc(program):
+    print("plc")
+
+def operatorInterface(program):
+    print("operatorInterface")
+
+def busStructures(program):
+    print("busStructures")
+
+def safetyUnits(program):
+    print("safetyUnits")
+
+parser = XMLParser(strip_cdata=False, resolve_entities=False)
+
+tTree = parse(argv[1], parser=parser)
+pTree = parse(argv[2], parser=parser)
+
+tRoot = tTree.getroot()
+pRoot = pTree.getroot()
+
+aoiReplace(tRoot, pRoot)
+udtReplace(tRoot, pRoot)
+
+for program in pRoot.iter("Program"):
+    name = program.attrib['Name']
+
+    if name.find("POWER_SUPPLY")        != -1:
+        powerSupply(program, tRoot)
+
+    elif name.find("DEVICES_GENERAL")   != -1:
+        devicesGeneral(program)
+
+    elif name.find("PLC")               != -1:
+        plc(program)
+
+    elif name.find("OPERATOR_INTERFACE")!= -1:
+        operatorInterface(program)
+
+    elif name.find("BUS_STRUCTURES")    != -1:
+        busStructures(program)
+ 
+    elif name.find("SAFETY_UNITS")      != -1:
+        safetyUnits(program)
+
+    elif name.find("CHECK_SA")          != -1:
+        checkSA(program, tRoot)
+
+pTree.write(argv[3]+"utf-8", encoding='utf-8', standalone=True)
+
+import codecs
+with codecs.open(argv[3]+"utf-8", "r", "utf-8") as sourceFile:
+    with codecs.open(argv[3], "w", "utf-8-sig") as targetFile:
+        contents = sourceFile.read()
+        targetFile.write(contents)
+
+import os
+os.remove(argv[3]+"utf-8")
