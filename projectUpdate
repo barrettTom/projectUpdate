@@ -71,14 +71,14 @@ class projectUpdate(QWidget):
 
         parser = XMLParser(strip_cdata=False, resolve_entities=False)
 
-        tTree = parse(templatePath, parser=parser)
         pTree = parse(projectPath, parser=parser)
+        tTree = parse(templatePath, parser=parser)
 
-        tRoot = tTree.getroot()
         pRoot = pTree.getroot()
+        tRoot = tTree.getroot()
 
-        aoiReplace(tRoot, pRoot)
-        udtReplace(tRoot, pRoot)
+        aoiReplace(pRoot, tRoot)
+        udtReplace(pRoot, tRoot)
 
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']

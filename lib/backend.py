@@ -2,12 +2,12 @@
 
 from lxml.etree import tostring, fromstring
 
-def aoiReplace(template, project):
+def aoiReplace(project, template):
     pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = pAois
 
-def udtReplace(template, project):
+def udtReplace(project, template):
     save = []
     for udt in project.iter("DataType"):
         if udt.attrib['Name'].find("StationData")       != -1:
@@ -55,4 +55,3 @@ def busStructures(program):
 
 def safetyUnits(program):
     print("safetyUnits")
-
