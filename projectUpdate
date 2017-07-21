@@ -3,7 +3,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog
 
-from lxml.etree import parse, XMLParser
+from lxml.etree import parse, XMLParser, tostring
 
 import sys
 import codecs
@@ -77,9 +77,16 @@ class projectUpdate(QWidget):
 
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
+        
+        changes = []
 
-        aoiReplace(pRoot, tRoot)
-        udtReplace(pRoot, tRoot)
+        original, replacement = aoiReplace(pRoot, tRoot)
+        changes.append({'original'      : original,
+                        'replacement'   : replacement})
+
+        original, replacement = udtReplace(pRoot, tRoot)
+        changes.append({'original'      : original,
+                        'replacement'   : replacement})
 
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
@@ -97,7 +104,8 @@ class projectUpdate(QWidget):
                 safetyUnits(program, tRoot, "G6_SAFETY_UNITS")
             
             elif name.find("05_CHECK_SA")              != -1:
-                checkSA(program, tRoot, "05_CHECK_SA", parser)
+                changes.append({'original'     :   program, 
+                                'replacement'  :   checkSA(program, tRoot, "05_CHECK_SA", parser)})
 
             elif name.find("G3_I/O_TEST")              != -1:
                 replaceAllRoutines(program, tRoot, "G3_I/O_TEST")
@@ -113,6 +121,10 @@ class projectUpdate(QWidget):
 
             elif name.find("G9_INTERCONNECTIONS")   != -1:
                 replaceAllRoutines(program, tRoot, "G9_INTERCONNECTIONS")
+
+        for change in changes:
+            parent = change['original'].getparent()
+            parent.replace(change['original'], change['replacement'])
 
         return pTree
 

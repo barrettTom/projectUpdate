@@ -12,7 +12,8 @@ def getReplacementProgram(template, find):
 def aoiReplace(project, template):
     pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
-    pAois = tAois
+    return pAois, tAois
+
 
 def udtReplace(project, template):
     save = []
@@ -28,7 +29,7 @@ def udtReplace(project, template):
     for udt in save:
         tUdts.append(udt)
 
-    pUdts = tUdts
+    return pUdts, tUdts
 
 def checkSA(program, template, find, parser):
     replacementProgram = getReplacementProgram(template, find)
@@ -39,7 +40,7 @@ def checkSA(program, template, find, parser):
     replacementString = replacementString.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
     replacementProgram = fromstring(replacementString, parser = parser)
 
-    program = replacementProgram
+    return replacementProgram
 
 def powerSupply(program, template, find):
     replacementProgram = getReplacementProgram(template, find)
