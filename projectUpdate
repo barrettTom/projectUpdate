@@ -9,7 +9,7 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, controlCircuit, station
+from lib.backend import aoiReplace, udtReplace, powerSupply, controlCircuit, station
 from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines, scada, machine
 
 class projectUpdate(QWidget):
@@ -100,10 +100,10 @@ class projectUpdate(QWidget):
             name = program.attrib['Name']
 
             if name.find("G0_POWER_SUPPLY")         != -1:
-                powerSupply(program, tRoot, "G0_POWER_SUPPLY")
+                powerSupply(program, tRoot, "G0_POWER_SUPPLY", machineNumber)
 
             elif name.find("G3_PLC")                != -1:
-                plc(program, tRoot, "G3_PLC")
+                plc(program, tRoot, "G3_PLC", machineNumber)
 
             elif name.find("G9_SCADA")              != -1:
                 scada(program, tRoot, "G9_SCADA")

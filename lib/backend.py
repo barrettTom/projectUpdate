@@ -52,15 +52,11 @@ def udtReplace(project, template):
 
     return pUdts, tUdts
 
-def checkSA(template, find, machineNumber):
-    return getReplacementProgram(template, find, machineNumber)
-
 def replaceAllRoutines(template, find, machineNumber):
     return getReplacementProgram(template, find, machineNumber)
 
-def powerSupply(program, template, find):
-    """
-    replacementProgram = getReplacementProgram(template, find)
+def powerSupply(program, template, find, machineNumber):
+    replacementProgram = getReplacementProgram(template, find, machineNumber)
 
     changes = []
 
@@ -73,12 +69,31 @@ def powerSupply(program, template, find):
                                 'replacement'   : replacementRoutine})
 
     for change in changes:
-        program.replace(change['original'], change['replacement'])
-    """
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
     return program
 
-def plc(program, template, find):
-    print("plc")
+def plc(program, template, find, machineNumber):
+    replacementProgram = getReplacementProgram(template, find, machineNumber)
+
+    changes = []
+
+    for routine in program.iter("Routine"):
+        for replacementRoutine in replacementProgram.iter("Routine"):
+            if routine.attrib['Name'] == "R10_BootCycle":
+                continue
+            elif routine.attrib['Name'] == "R11_MotionGroup":
+                continue
+            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+                changes.append({'original'      : routine,
+                                'replacement'   : replacementRoutine})
+
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
+    return program
 
 def busStructures(program, template, find):
     print("busStructures")
