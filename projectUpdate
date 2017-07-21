@@ -53,19 +53,23 @@ class projectUpdate(QWidget):
         if not path: path = QFileDialog.getOpenFileName(self)[0]
         if path: self.templateEntry.setText(path)
 
+    def save(self, path, project):
+        project.write(path+"utf-8", encoding='utf-8', standalone=True)
+
+        with codecs.open(path+"utf-8", "r", "utf-8") as sourceFile:
+            with codecs.open(path, "w", "utf-8-sig") as targetFile:
+                contents = sourceFile.read()
+                targetFile.write(contents)
+
+        os.remove(path+"utf-8")
+
     def update(self, path=None):
         if not path: path = QFileDialog.getSaveFileName(self)[0]
         if path:
             updatedProject = self.main(self.projectEntry.text(), self.templateEntry.text())
 
-            updatedProject.write(path+"utf-8", encoding='utf-8', standalone=True)
+            self.save(path, updatedProject)
 
-            with codecs.open(path+"utf-8", "r", "utf-8") as sourceFile:
-                with codecs.open(path, "w", "utf-8-sig") as targetFile:
-                    contents = sourceFile.read()
-                    targetFile.write(contents)
-
-            os.remove(path+"utf-8")
             sys.exit()
 
     def main(self, projectPath, templatePath):
@@ -74,6 +78,8 @@ class projectUpdate(QWidget):
 
         pTree = parse(projectPath, parser=parser)
         tTree = parse(templatePath, parser=parser)
+
+        self.save("projectBackup.L5X", pTree)
 
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
@@ -87,6 +93,8 @@ class projectUpdate(QWidget):
         original, replacement = udtReplace(pRoot, tRoot)
         changes.append({'original'      : original,
                         'replacement'   : replacement})
+
+        machineNumber = "546"
 
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
@@ -105,27 +113,27 @@ class projectUpdate(QWidget):
             
             elif name.find("05_CHECK_SA")           != -1:
                 changes.append({'original'      :   program, 
-                                'replacement'   :   checkSA(program, tRoot, "05_CHECK_SA", parser)})
+                                'replacement'   :   replaceAllRoutines(tRoot, "05_CHECK_SA", machineNumber)})
 
             elif name.find("G3_I/O_TEST")           != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(program, tRoot, "G3_I/O_TEST")})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G3_I/O_TEST", machineNumber)})
 
             elif name.find("G1_DEVICES_GENERAL")    != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(program, tRoot, "G1_DEVICES_GENERAL")})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G1_DEVICES_GENERAL", machineNumber)})
 
             elif name.find("G2_POWER_SUPPLY_DC")    != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(program, tRoot, "G2_POWER_SUPPLY_DC")})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G2_POWER_SUPPLY_DC", machineNumber)})
 
             elif name.find("G4_OPERATOR_INTERFACE") != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(program, tRoot, "G4_OPERATOR_INTERFACE")})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G4_OPERATOR_INTERFACE", machineNumber)})
 
             elif name.find("G9_INTERCONNECTIONS")   != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(program, tRoot, "G9_INTERCONNECTIONS")})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G9_INTERCONNECTIONS", machineNumber)})
 
         for change in changes:
             parent = change['original'].getparent()

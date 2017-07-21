@@ -1,19 +1,31 @@
 #!/usr/bin/python3
 
-from lxml.etree import tostring, fromstring
+from lxml.etree import tostring, fromstring, XMLParser
 
-def getReplacementProgram(template, find):
+def getReplacementProgram(template, find, machineNumber):
     for templateProgram in template.iter("Program"):
         if templateProgram.attrib["Name"].find(find) != -1:
-            replacementProgram = templateProgram
+            program = templateProgram
 
-    return replacementProgram
+    program = XXXreplace(program, machineNumber)
+
+    return program
+
+def XXXreplace(program, machineNumber):
+    parser = XMLParser(strip_cdata=False, resolve_entities=False)
+
+    string = tostring(program)
+
+    string = string.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
+
+    program = fromstring(string, parser = parser)
+
+    return program
 
 def aoiReplace(project, template):
     pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
     return pAois, tAois
-
 
 def udtReplace(project, template):
     save = []
@@ -31,35 +43,32 @@ def udtReplace(project, template):
 
     return pUdts, tUdts
 
-def checkSA(program, template, find, parser):
-    replacementProgram = getReplacementProgram(template, find)
+def checkSA(template, find, machineNumber):
+    return getReplacementProgram(template, find, machineNumber)
 
-    machineNumber = program.attrib["Name"].split("_")[1][:3]
-
-    replacementString = tostring(replacementProgram)
-    replacementString = replacementString.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
-    replacementProgram = fromstring(replacementString, parser = parser)
-
-    return replacementProgram
+def replaceAllRoutines(template, find, machineNumber):
+    return getReplacementProgram(template, find, machineNumber)
 
 def powerSupply(program, template, find):
+    """
     replacementProgram = getReplacementProgram(template, find)
+
+    changes = []
 
     for routine in program.iter("Routine"):
         for replacementRoutine in replacementProgram.iter("Routine"):
             if routine.attrib['Name'] == "R20_Conditions":
                 continue
             elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
-                routine = replacementRoutine
+                changes.append({'original'      : routine,
+                                'replacement'   : replacementRoutine})
 
-def replaceAllRoutines(program, template, find):
-    replacementProgram = getReplacementProgram(template, find)
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+    """
+    return program
 
-    for routine in program.iter("Routine"):
-        for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == replacementRoutine.attrib['Name']:
-                routine = replacementRoutine
-    
 def plc(program, template, find):
     print("plc")
 
