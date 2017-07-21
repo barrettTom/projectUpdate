@@ -2,26 +2,6 @@
 
 from lxml.etree import tostring, fromstring, XMLParser
 
-def getReplacementProgram(template, find, machineNumber):
-    for templateProgram in template.iter("Program"):
-        if templateProgram.attrib["Name"].find(find) != -1:
-            program = templateProgram
-
-    program = XXXreplace(program, machineNumber)
-
-    return program
-
-def XXXreplace(program, machineNumber):
-    parser = XMLParser(strip_cdata=False, resolve_entities=False)
-
-    string = tostring(program)
-
-    string = string.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
-
-    program = fromstring(string, parser = parser)
-
-    return program
-
 def aoiReplace(project, template):
     save = []
     for aoi in project.iter("AddOnInstructionDefinition"):
@@ -52,19 +32,32 @@ def udtReplace(project, template):
 
     return pUdts, tUdts
 
-def replaceAllRoutines(template, find, machineNumber):
-    return getReplacementProgram(template, find, machineNumber)
+def replaceWholeProgram(template, find, machineNumber):
+    for templateProgram in template.iter("Program"):
+        if templateProgram.attrib["Name"].find(find) != -1:
+            program = templateProgram
 
-def powerSupply(program, template, find, machineNumber):
-    replacementProgram = getReplacementProgram(template, find, machineNumber)
+    parser = XMLParser(strip_cdata=False, resolve_entities=False)
 
+    string = tostring(program)
+
+    string = string.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
+
+    program = fromstring(string, parser = parser)
+
+    return program
+
+def replaceSpecificRoutines(program, replacementProgram, routineNamesToSkip):
     changes = []
 
     for routine in program.iter("Routine"):
         for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == "R20_Conditions":
-                continue
-            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+            skip = False
+            for routineNameToSkip in routineNamesToSkip:
+                if routine.attrib['Name'] == routineNameToSkip:
+                    skip = True
+
+            if routine.attrib['Name'] == replacementRoutine.attrib['Name'] and not skip:
                 changes.append({'original'      : routine,
                                 'replacement'   : replacementRoutine})
 
@@ -73,61 +66,3 @@ def powerSupply(program, template, find, machineNumber):
         parent.replace(change['original'], change['replacement'])
 
     return program
-
-def plc(program, template, find, machineNumber):
-    replacementProgram = getReplacementProgram(template, find, machineNumber)
-
-    changes = []
-
-    for routine in program.iter("Routine"):
-        for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == "R10_BootCycle":
-                continue
-            elif routine.attrib['Name'] == "R11_MotionGroup":
-                continue
-            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
-                changes.append({'original'      : routine,
-                                'replacement'   : replacementRoutine})
-
-    for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
-
-    return program
-
-def busStructures(program, template, find, machineNumber):
-    replacementProgram = getReplacementProgram(template, find, machineNumber)
-
-    changes = []
-
-    for routine in program.iter("Routine"):
-        for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == "R00_S01_Init":
-                continue
-            elif routine.attrib['Name'] == "R22_PIO_Diagnostics":
-                continue
-            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
-                changes.append({'original'      : routine,
-                                'replacement'   : replacementRoutine})
-
-    for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
-
-    return program
-
-def safetyUnits(program, template, find):
-    print("safetyUnits")
-
-def controlCircuit(program, template, find):
-    print("controlCircuit")
-
-def scada(program, template, find):
-    print("scada")
-    return program
-
-def station(program, template):
-    print(program.attrib['Name'])
-
-def machine(program, template):
-    print(program.attrib['Name'])

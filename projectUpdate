@@ -9,8 +9,7 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, powerSupply, controlCircuit, station
-from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines, scada, machine
+from lib.backend import aoiReplace, udtReplace, replaceSpecificRoutines, replaceWholeProgram
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -79,7 +78,7 @@ class projectUpdate(QWidget):
         pTree = parse(projectPath, parser=parser)
         tTree = parse(templatePath, parser=parser)
 
-        self.save("projectBackup.L5X", pTree)
+        self.save("backup.L5X", pTree)
 
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
@@ -100,56 +99,75 @@ class projectUpdate(QWidget):
             name = program.attrib['Name']
 
             if name.find("G0_POWER_SUPPLY")         != -1:
+                replacemenProgram = replaceWholeProgram(tRoot, "G0_POWER_SUPPLY", machineNumber)
+                routineNamesToSkip = ["R20_Conditions"]
                 changes.append({'original'      :   program,
-                                'replacement'   :   powerSupply(program, tRoot, "G0_POWER_SUPPLY", machineNumber)})
-
-            elif name.find("G3_PLC")                != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   plc(program, tRoot, "G3_PLC", machineNumber)})
-
-            elif name.find("G9_SCADA")              != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   scada(program, tRoot, "G9_SCADA")})
-
-            elif name.find("G5_BUS_STRUCTURES")     != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   busStructures(program, tRoot, "G5_BUS_STRUCTURES", machineNumber)})
-         
-            elif name.find("G6_SAFETY_UNITS")       != -1:
-                safetyUnits(program, tRoot, "G6_SAFETY_UNITS")
-
-            elif name.find("G7_CONTROL_CIRCUIT")    != -1:
-                controlCircuit(program, tRoot, "G7_CONTROL_CIRCUIT")
-            
-            elif name.find("05_CHECK_SA")           != -1:
-                changes.append({'original'      :   program, 
-                                'replacement'   :   replaceAllRoutines(tRoot, "05_CHECK_SA", machineNumber)})
-
-            elif name.find("G3_IO_TEST")           != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G3_IO_TEST", machineNumber)})
-
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
             elif name.find("G1_DEVICES_GENERAL")    != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G1_DEVICES_GENERAL", machineNumber)})
-
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "G1_DEVICES_GENERAL", 
+                                                                        machineNumber)})
             elif name.find("G2_POWER_SUPPLY_DC")    != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G2_POWER_SUPPLY_DC", machineNumber)})
-
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "G2_POWER_SUPPLY_DC", 
+                                                                        machineNumber)})
+            elif name.find("G3_PLC")                != -1:
+                replacemenProgram = replaceWholeProgram(tRoot, "G3_PLC", machineNumber)
+                routineNamesToSkip = ["R10_BootCycle", "R11_MotionGroup"]
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
+            elif name.find("G3_IO_TEST")           != -1:
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "G3_IO_TEST",        
+                                                                        machineNumber)})
             elif name.find("G4_OPERATOR_INTERFACE") != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G4_OPERATOR_INTERFACE", machineNumber)})
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "G4_OPERATOR_INTERFACE",     
+                                                                        machineNumber)})
+            elif name.find("G5_BUS_STRUCTURES")     != -1:
+                replacemenProgram = replaceWholeProgram(tRoot, "G5_BUS_STRUCTURES", machineNumber)
+                routineNamesToSkip = ["R01_S01_Init", "R22_PIO_Diagnostics"]
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
+            elif name.find("G6_SAFETY_UNITS")       != -1:
+                print("safety")
+
+            elif name.find("G7_CONTROL_CIRCUIT")    != -1:
+                replacemenProgram = replaceWholeProgram(tRoot, "G7_CONTROL_CIRCUIT", machineNumber)
+                routineNamesToSkip = ["R30_M001_MainAirValve"]
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
 
             elif name.find("G9_INTERCONNECTIONS")   != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G9_INTERCONNECTIONS", machineNumber)})
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "G9_INTERCONNECTIONS", 
+                                                                        machineNumber)})
+            elif name.find("G9_SCADA")              != -1:
+                print("scada")
 
+            elif name.find("05_CHECK_SA")           != -1:
+                changes.append({'original'      :   program, 
+                                'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                        "05_CHECK_SA",       
+                                                                        machineNumber)})
             else:
                 if len(name.split("_")[1]) == 5:
-                    station(program, tRoot)
+                    print("station")
                 else:
-                    machine(program, tRoot)
+                    print("machine")
 
         for change in changes:
             parent = change['original'].getparent()
