@@ -141,6 +141,12 @@ class projectUpdate(QWidget):
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceAllRoutines(tRoot, "G9_INTERCONNECTIONS", machineNumber)})
 
+            else:
+                if len(name.split("_")[1]) == 5:
+                    print("station")
+                else:
+                    print("mach")
+
         for change in changes:
             parent = change['original'].getparent()
             parent.replace(change['original'], change['replacement'])
