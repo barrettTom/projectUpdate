@@ -140,8 +140,12 @@ class projectUpdate(QWidget):
                                                                             replacemenProgram, 
                                                                             routineNamesToSkip)})
             elif name.find("G6_SAFETY_UNITS")       != -1:
-                print("safety")
-
+                replacemenProgram = replaceWholeProgram(tRoot, "G6_SAFETY_UNITS", machineNumber)
+                routineNamesToSkip = ["R10_EStop", "R11_SafetyGuards", "R20_Conditions"]
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
             elif name.find("G7_CONTROL_CIRCUIT")    != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G7_CONTROL_CIRCUIT", machineNumber)
                 routineNamesToSkip = ["R30_M001_MainAirValve"]
@@ -156,8 +160,12 @@ class projectUpdate(QWidget):
                                                                         "G9_INTERCONNECTIONS", 
                                                                         machineNumber)})
             elif name.find("G9_SCADA")              != -1:
-                print("scada")
-
+                replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
+                routineNamesToSkip = ["R03_Parameter_Handler"]
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceSpecificRoutines(program,
+                                                                            replacemenProgram, 
+                                                                            routineNamesToSkip)})
             elif name.find("05_CHECK_SA")           != -1:
                 changes.append({'original'      :   program, 
                                 'replacement'   :   replaceWholeProgram(tRoot, 
