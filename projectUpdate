@@ -9,8 +9,8 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, controlCircuit
-from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines, scada
+from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, controlCircuit, station
+from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines, scada, machine
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -121,9 +121,9 @@ class projectUpdate(QWidget):
                 changes.append({'original'      :   program, 
                                 'replacement'   :   replaceAllRoutines(tRoot, "05_CHECK_SA", machineNumber)})
 
-            elif name.find("G3_I/O_TEST")           != -1:
+            elif name.find("G3_IO_TEST")           != -1:
                 changes.append({'original'      :   program,
-                                'replacement'   :   replaceAllRoutines(tRoot, "G3_I/O_TEST", machineNumber)})
+                                'replacement'   :   replaceAllRoutines(tRoot, "G3_IO_TEST", machineNumber)})
 
             elif name.find("G1_DEVICES_GENERAL")    != -1:
                 changes.append({'original'      :   program,
@@ -143,9 +143,9 @@ class projectUpdate(QWidget):
 
             else:
                 if len(name.split("_")[1]) == 5:
-                    print("station")
+                    station(program, tRoot)
                 else:
-                    print("mach")
+                    machine(program, tRoot)
 
         for change in changes:
             parent = change['original'].getparent()

@@ -91,3 +91,9 @@ def controlCircuit(program, template, find):
 
 def scada(program, template, find):
     print("scada")
+
+def station(program, template):
+    print(program.attrib['Name'])
+
+def machine(program, template):
+    print(program.attrib['Name'])
