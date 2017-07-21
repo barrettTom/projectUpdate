@@ -23,8 +23,17 @@ def XXXreplace(program, machineNumber):
     return program
 
 def aoiReplace(project, template):
+    save = []
+    for aoi in project.iter("AddOnInstructionDefinition"):
+        if aoi.attrib['Name'].find("Pinning")           != -1:
+            save.append(aoi)
+
     pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
     tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
+
+    for aoi in save:
+        tAois.append(aoi)
+
     return pAois, tAois
 
 def udtReplace(project, template):
@@ -64,8 +73,7 @@ def powerSupply(program, template, find):
                                 'replacement'   : replacementRoutine})
 
     for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
+        program.replace(change['original'], change['replacement'])
     """
     return program
 
