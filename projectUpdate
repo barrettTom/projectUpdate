@@ -94,33 +94,38 @@ class projectUpdate(QWidget):
             if name.find("G0_POWER_SUPPLY")         != -1:
                 powerSupply(program, tRoot, "G0_POWER_SUPPLY")
 
-            elif name.find("G3_PLC")                   != -1:
+            elif name.find("G3_PLC")                != -1:
                 plc(program, tRoot, "G3_PLC")
 
-            elif name.find("G5_BUS_STRUCTURES")        != -1:
+            elif name.find("G5_BUS_STRUCTURES")     != -1:
                 busStructures(program, tRoot, "G5_BUS_STRUCTURES")
          
-            elif name.find("G6_SAFETY_UNITS")          != -1:
+            elif name.find("G6_SAFETY_UNITS")       != -1:
                 safetyUnits(program, tRoot, "G6_SAFETY_UNITS")
             
-            elif name.find("05_CHECK_SA")              != -1:
-                changes.append({'original'     :   program, 
-                                'replacement'  :   checkSA(program, tRoot, "05_CHECK_SA", parser)})
+            elif name.find("05_CHECK_SA")           != -1:
+                changes.append({'original'      :   program, 
+                                'replacement'   :   checkSA(program, tRoot, "05_CHECK_SA", parser)})
 
-            elif name.find("G3_I/O_TEST")              != -1:
-                replaceAllRoutines(program, tRoot, "G3_I/O_TEST")
+            elif name.find("G3_I/O_TEST")           != -1:
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceAllRoutines(program, tRoot, "G3_I/O_TEST")})
 
-            elif name.find("G1_DEVICES_GENERAL")       != -1:
-                replaceAllRoutines(program, tRoot, "G1_DEVICES_GENERAL")
+            elif name.find("G1_DEVICES_GENERAL")    != -1:
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceAllRoutines(program, tRoot, "G1_DEVICES_GENERAL")})
 
-            elif name.find("G2_POWER_SUPPLY_DC")       != -1:
-                replaceAllRoutines(program, tRoot, "G2_POWER_SUPPLY_DC")
+            elif name.find("G2_POWER_SUPPLY_DC")    != -1:
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceAllRoutines(program, tRoot, "G2_POWER_SUPPLY_DC")})
 
-            elif name.find("G4_OPERATOR_INTERFACE")    != -1:
-                replaceAllRoutines(program, tRoot, "G4_OPERATOR_INTERFACE")
+            elif name.find("G4_OPERATOR_INTERFACE") != -1:
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceAllRoutines(program, tRoot, "G4_OPERATOR_INTERFACE")})
 
             elif name.find("G9_INTERCONNECTIONS")   != -1:
-                replaceAllRoutines(program, tRoot, "G9_INTERCONNECTIONS")
+                changes.append({'original'      :   program,
+                                'replacement'   :   replaceAllRoutines(program, tRoot, "G9_INTERCONNECTIONS")})
 
         for change in changes:
             parent = change['original'].getparent()
