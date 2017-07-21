@@ -85,3 +85,9 @@ def busStructures(program, template, find):
 
 def safetyUnits(program, template, find):
     print("safetyUnits")
+
+def controlCircuit(program, template, find):
+    print("controlCircuit")
+
+def scada(program, template, find):
+    print("scada")

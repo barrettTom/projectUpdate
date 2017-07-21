@@ -9,8 +9,8 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply
-from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines
+from lib.backend import aoiReplace, udtReplace, checkSA, powerSupply, controlCircuit
+from lib.backend import safetyUnits, busStructures, plc, replaceAllRoutines, scada
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -105,11 +105,17 @@ class projectUpdate(QWidget):
             elif name.find("G3_PLC")                != -1:
                 plc(program, tRoot, "G3_PLC")
 
+            elif name.find("G9_SCADA")              != -1:
+                scada(program, tRoot, "G9_SCADA")
+
             elif name.find("G5_BUS_STRUCTURES")     != -1:
                 busStructures(program, tRoot, "G5_BUS_STRUCTURES")
          
             elif name.find("G6_SAFETY_UNITS")       != -1:
                 safetyUnits(program, tRoot, "G6_SAFETY_UNITS")
+
+            elif name.find("G7_CONTROL_CIRCUIT")    != -1:
+                controlCircuit(program, tRoot, "G7_CONTROL_CIRCUIT")
             
             elif name.find("05_CHECK_SA")           != -1:
                 changes.append({'original'      :   program, 
