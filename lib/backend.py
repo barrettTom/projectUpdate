@@ -95,8 +95,26 @@ def plc(program, template, find, machineNumber):
 
     return program
 
-def busStructures(program, template, find):
-    print("busStructures")
+def busStructures(program, template, find, machineNumber):
+    replacementProgram = getReplacementProgram(template, find, machineNumber)
+
+    changes = []
+
+    for routine in program.iter("Routine"):
+        for replacementRoutine in replacementProgram.iter("Routine"):
+            if routine.attrib['Name'] == "R00_S01_Init":
+                continue
+            elif routine.attrib['Name'] == "R22_PIO_Diagnostics":
+                continue
+            elif routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+                changes.append({'original'      : routine,
+                                'replacement'   : replacementRoutine})
+
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
+    return program
 
 def safetyUnits(program, template, find):
     print("safetyUnits")
@@ -106,6 +124,7 @@ def controlCircuit(program, template, find):
 
 def scada(program, template, find):
     print("scada")
+    return program
 
 def station(program, template):
     print(program.attrib['Name'])

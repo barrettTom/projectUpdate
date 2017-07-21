@@ -100,16 +100,20 @@ class projectUpdate(QWidget):
             name = program.attrib['Name']
 
             if name.find("G0_POWER_SUPPLY")         != -1:
-                powerSupply(program, tRoot, "G0_POWER_SUPPLY", machineNumber)
+                changes.append({'original'      :   program,
+                                'replacement'   :   powerSupply(program, tRoot, "G0_POWER_SUPPLY", machineNumber)})
 
             elif name.find("G3_PLC")                != -1:
-                plc(program, tRoot, "G3_PLC", machineNumber)
+                changes.append({'original'      :   program,
+                                'replacement'   :   plc(program, tRoot, "G3_PLC", machineNumber)})
 
             elif name.find("G9_SCADA")              != -1:
-                scada(program, tRoot, "G9_SCADA")
+                changes.append({'original'      :   program,
+                                'replacement'   :   scada(program, tRoot, "G9_SCADA")})
 
             elif name.find("G5_BUS_STRUCTURES")     != -1:
-                busStructures(program, tRoot, "G5_BUS_STRUCTURES")
+                changes.append({'original'      :   program,
+                                'replacement'   :   busStructures(program, tRoot, "G5_BUS_STRUCTURES", machineNumber)})
          
             elif name.find("G6_SAFETY_UNITS")       != -1:
                 safetyUnits(program, tRoot, "G6_SAFETY_UNITS")
