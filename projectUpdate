@@ -131,8 +131,10 @@ class projectUpdate(QWidget):
 
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
+            found = False
             for filterProgram in filterPrograms:
                 if name.find(filterProgram["Name"]) != -1:
+                    found = True
                     if filterProgram["Routines"][0] == 'All':
                         changes.append({'original'      :   program,
                                         'replacement'   :   replaceWholeProgram(tRoot, 
@@ -147,6 +149,21 @@ class projectUpdate(QWidget):
                                         'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                         replacementProgram, 
                                                                                         routineSpecifics)})
+            if not found:
+                if len(name.split("_")[1]) == 3:
+                    for filterProgram in filterPrograms:
+                        if filterProgram["Name"] == "MACHINE_NAME":
+                            routineSpecifics = []
+                            for routineSpecific in filterProgram["Routines"]:
+                                routineSpecifics.append(routineSpecific)
+                            replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber)
+                            changes.append({'original'      :   program,
+                                            'replacement'   :   replaceSpecificRoutineRungs(program,
+                                                                                            replacementProgram, 
+                                                                                            routineSpecifics)})
+                else:
+                    print(name,"station")
+
         for change in changes:
             parent = change['original'].getparent()
             parent.replace(change['original'], change['replacement'])
