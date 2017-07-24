@@ -101,13 +101,13 @@ class projectUpdate(QWidget):
 
             if name.find("G0_POWER_SUPPLY")         != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G0_POWER_SUPPLY", machineNumber)
-                routineNamesToSkip = [{"Name" : "R20_Conditions", 
-                                       "Type" : "Replace",
-                                       "Rungs": ["0"]}]
+                routineSpecifics = [{"Name" : "R20_Conditions", 
+                                     "Type" : "Replace",
+                                     "Rungs": ["0"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("G1_DEVICES_GENERAL")    != -1:
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceWholeProgram(tRoot, 
@@ -120,16 +120,16 @@ class projectUpdate(QWidget):
                                                                         machineNumber)})
             elif name.find("G3_PLC")                != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G3_PLC", machineNumber)
-                routineNamesToSkip = [{"Name" : "R10_BootCycle",
-                                       "Type" : "Keep",
-                                       "Rungs": ["2"]}, 
-                                      {"Name" : "R11_MotionGroup",
-                                       "Type" : "Keep",
-                                       "Rungs": ["2"]}]
+                routineSpecifics = [{"Name" : "R10_BootCycle",
+                                     "Type" : "Keep",
+                                     "Rungs": ["2"]}, 
+                                    {"Name" : "R11_MotionGroup",
+                                     "Type" : "Keep",
+                                     "Rungs": ["2"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("G3_IO_TEST")           != -1:
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceWholeProgram(tRoot, 
@@ -142,37 +142,37 @@ class projectUpdate(QWidget):
                                                                         machineNumber)})
             elif name.find("G5_BUS_STRUCTURES")     != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G5_BUS_STRUCTURES", machineNumber)
-                routineNamesToSkip = [{"Name" : "R22_PIO_Diagnostics",
-                                       "Type" : "Keep",
-                                       "Rungs": ["1"]}]
+                routineSpecifics = [{"Name" : "R22_PIO_Diagnostics",
+                                     "Type" : "Keep",
+                                     "Rungs": ["1"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("G6_SAFETY_UNITS")       != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G6_SAFETY_UNITS", machineNumber)
-                routineNamesToSkip = [{"Name" : "R10_EStop",
-                                       "Type" : "Keep",
-                                       "Rungs": ["3"]}, 
-                                      {"Name" : "R11_SafetyGuards",
-                                       "Type" : "Replace",
-                                       "Rungs": ["0","1","2","3","4","5"]},
-                                      {"Name" : "R20_Conditions",
-                                       "Type" : "Replace",
-                                       "Rungs": ["0","1","3"]}]
+                routineSpecifics = [{"Name" : "R10_EStop",
+                                     "Type" : "Keep",
+                                     "Rungs": ["3"]}, 
+                                    {"Name" : "R11_SafetyGuards",
+                                     "Type" : "Replace",
+                                     "Rungs": ["0","1","2","3","4","5"]},
+                                    {"Name" : "R20_Conditions",
+                                     "Type" : "Replace",
+                                     "Rungs": ["0","1","3"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("G7_CONTROL_CIRCUIT")    != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G7_CONTROL_CIRCUIT", machineNumber)
-                routineNamesToSkip = [{"Name" : "R30_M001_MainAirValve",
-                                       "Type" : "Keep",
-                                       "Rungs": ["1"]}]
+                routineSpecifics = [{"Name" : "R30_M001_MainAirValve",
+                                     "Type" : "Keep",
+                                     "Rungs": ["1"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("G9_INTERCONNECTIONS")   != -1:
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceWholeProgram(tRoot, 
@@ -180,13 +180,13 @@ class projectUpdate(QWidget):
                                                                         machineNumber)})
             elif name.find("G9_SCADA")              != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
-                routineNamesToSkip = [{"Name" : "R03_Parameter_Handler",
-                                       "Type" : "Keep",
-                                       "Rungs": ["3"]}]
+                routineSpecifics = [{"Name" : "R03_Parameter_Handler",
+                                     "Type" : "Keep",
+                                     "Rungs": ["3"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
-                                                                                routineNamesToSkip)})
+                                                                                routineSpecifics)})
             elif name.find("05_CHECK_SA")           != -1:
                 changes.append({'original'      :   program, 
                                 'replacement'   :   replaceWholeProgram(tRoot, 

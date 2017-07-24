@@ -69,6 +69,22 @@ def replaceAllButSpecificRoutines(program, replacementProgram, routineNamesToSki
     return program
 
 def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRungs):
+    changes = []
+    for routine in program.iter("Routine"):
+        skip = False
+        for routineNameAndRungs in routineNamesAndRungs:
+            if routine.attrib["Name"] == routineNameAndRungs["Name"]:
+                skip = True
+
+        if not skip:
+            for replacementRoutine in replacementProgram.iter("Routine"):
+                if routine.attrib["Name"] == replacementRoutine.attrib["Name"]:
+                        changes.append({'original'      :   routine,
+                                        'replacement'   :   replacementRoutine})
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
     for routineNameAndRungs in routineNamesAndRungs:
         if routineNameAndRungs['Type'] == "Keep":
             program = replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
