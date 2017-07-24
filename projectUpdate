@@ -96,6 +96,9 @@ class projectUpdate(QWidget):
 
         machineNumber = pRoot.base.split("_")[1][:3]
 
+        with open("filter.txt") as dataFile:
+            print(dataFile.read())
+
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
 
@@ -125,7 +128,7 @@ class projectUpdate(QWidget):
                                      "Rungs": ["2"]}, 
                                     {"Name" : "R11_MotionGroup",
                                      "Type" : "Keep",
-                                     "Rungs": ["2"]}]
+                                     "Rungs": ["1"]}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
@@ -144,7 +147,9 @@ class projectUpdate(QWidget):
                 replacemenProgram = replaceWholeProgram(tRoot, "G5_BUS_STRUCTURES", machineNumber)
                 routineSpecifics = [{"Name" : "R22_PIO_Diagnostics",
                                      "Type" : "Keep",
-                                     "Rungs": ["1"]}]
+                                     "Rungs": ["1"]},
+                                    {"Name" : "R00_S01_Init",
+                                     "Type" : "KeepWhole"}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
@@ -156,7 +161,7 @@ class projectUpdate(QWidget):
                                      "Rungs": ["3"]}, 
                                     {"Name" : "R11_SafetyGuards",
                                      "Type" : "Replace",
-                                     "Rungs": ["0","1","2","3","4","5"]},
+                                     "Rungs": ["0","1","2","3","4","5","7","8","9","10","11","12"]},
                                     {"Name" : "R20_Conditions",
                                      "Type" : "Replace",
                                      "Rungs": ["0","1","3"]}]
@@ -181,8 +186,7 @@ class projectUpdate(QWidget):
             elif name.find("G9_SCADA")              != -1:
                 replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
                 routineSpecifics = [{"Name" : "R03_Parameter_Handler",
-                                     "Type" : "Keep",
-                                     "Rungs": ["3"]}]
+                                     "Type" : "KeepWhole"}]
                 changes.append({'original'      :   program,
                                 'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                 replacemenProgram, 
@@ -196,8 +200,24 @@ class projectUpdate(QWidget):
                 if len(name.split("_")[1]) == 5:
                     print("station")
                 else:
-                    print("machine")
-
+                    replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
+                    routineSpecifics = [{"Name" : "MainRoutine",
+                                         "Type" : "KeepWhole"},
+                                        {"Name" : "R00_S01_Init",
+                                         "Type" : "KeepWhole"},
+                                        {"Name" : "R20_Conditions",
+                                         "Type" : "KeepWhole"},
+                                        {"Name" : "R20_MachineCtrl",
+                                         "Type" : "KeepWhole"},
+                                        {"Name" : "R60_EmptyRun",
+                                         "Type" : "KeepWhole"},
+                                        {"Name" : "R95_Counter",
+                                         "Type" : "Replace",
+                                         "Rungs": ["0", "1"]}]
+                    changes.append({'original'      :   program,
+                                    'replacement'   :   replaceSpecificRoutineRungs(program,
+                                                                                    replacemenProgram, 
+                                                                                    routineSpecifics)})
         for change in changes:
             parent = change['original'].getparent()
             parent.replace(change['original'], change['replacement'])

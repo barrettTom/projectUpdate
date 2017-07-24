@@ -90,6 +90,8 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
             program = replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
         elif routineNameAndRungs['Type'] == "Replace":
             program = replaceSpecificRungs(program, replacementProgram, routineNameAndRungs)
+        elif routineNameAndRungs['Type'] == "KeepWhole":
+            continue
     
     return program
 
