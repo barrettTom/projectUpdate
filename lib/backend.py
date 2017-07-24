@@ -47,19 +47,72 @@ def replaceWholeProgram(template, find, machineNumber):
 
     return program
 
-def replaceSpecificRoutines(program, replacementProgram, routineNamesToSkip):
+def replaceAllButSpecificRoutines(program, replacementProgram, routineNamesToSkip):
+    changes = []
+
+    for routine in program.iter("Routine"):
+        skip = False
+        for routineNameToSkip in routineNamesToSkip:
+            if routine.attrib['Name'] == routineNameToSkip:
+                skip = True
+        
+        if not skip:
+            for replacementRoutine in replacementProgram.iter("Routine"):
+                if routine.attrib['Name'] == replacementRoutine.attrib['Name']:
+                    changes.append({'original'      : routine,
+                                    'replacement'   : replacementRoutine})
+
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
+    return program
+
+def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRungs):
+    for routineNameAndRungs in routineNamesAndRungs:
+        if routineNameAndRungs['Type'] == "Keep":
+            program = replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
+        elif routineNameAndRungs['Type'] == "Replace":
+            program = replaceSpecificRungs(program, replacementProgram, routineNameAndRungs)
+    
+    return program
+
+def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
 
     for routine in program.iter("Routine"):
         for replacementRoutine in replacementProgram.iter("Routine"):
-            skip = False
-            for routineNameToSkip in routineNamesToSkip:
-                if routine.attrib['Name'] == routineNameToSkip:
-                    skip = True
+            if routine.attrib['Name'] == replacementRoutine.attrib["Name"] == routineNameAndRungs["Name"]:
+                for rung in routine.iter("Rung"):
+                    for replacementRung in replacementRoutine.iter("Rung"):
+                        for rungNumber in routineNameAndRungs["Rungs"]:
+                            if rung.attrib["Number"] == replacementRung.attrib["Number"] == rungNumber:
+                                changes.append({'original'      :   rung,
+                                                'replacement'   :   replacementRung})
 
-            if routine.attrib['Name'] == replacementRoutine.attrib['Name'] and not skip:
-                changes.append({'original'      : routine,
-                                'replacement'   : replacementRoutine})
+    for change in changes:
+        parent = change['original'].getparent()
+        parent.replace(change['original'], change['replacement'])
+
+    return program
+
+
+def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
+    changes = []
+
+    for routine in program.iter("Routine"):
+        for replacementRoutine in replacementProgram.iter("Routine"):
+            if routine.attrib['Name'] == replacementRoutine.attrib["Name"] == routineNameAndRungs["Name"]:
+                for rung in routine.iter("Rung"):
+                    skip = False
+                    for rungNumber in routineNameAndRungs["Rungs"]:
+                        if rung.attrib["Number"] == rungNumber:
+                            skip = True
+                    if not skip:
+                        for replacementRung in replacementRoutine.iter("Rung"):
+                            if rung.attrib["Number"] == replacementRung.attrib["Number"]:
+                                changes.append({'original'      :   rung,
+                                                'replacement'   :   replacementRung})
 
     for change in changes:
         parent = change['original'].getparent()
