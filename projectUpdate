@@ -95,129 +95,57 @@ class projectUpdate(QWidget):
                         'replacement'   : replacement})
 
         machineNumber = pRoot.base.split("_")[1][:3]
+        
+        data = []
 
-        with open("filter.txt") as dataFile:
-            print(dataFile.read())
+        with open("filter.txt", "r") as dataFile:
+            lines = dataFile.readlines()
+            i = 0
+            while i < len(lines) - 1:
+                program = {}
+                program["Name"] = lines[i].strip()
+                program["Routines"] = []
+                while True:
+                    routine = {}
+                    i += 1
+                    if i > len(lines) - 1:
+                        break
+                    if lines[i] == "\n":
+                        break
+                    line = lines[i].split(",")
+                    if len(line) == 1:
+                        routine = line[0].strip()
+                    else:
+                        routine['Type'] = line[1].strip()
+                        routine['Name'] = line[0].strip()
+                        if len(line) > 2:
+                            nums = []
+                            for n in line[2:]:
+                                nums.append(n.strip())
+                            routine['Rungs'] = nums
+                    program["Routines"].append(routine)
+
+                data.append(program)
+                i += 1
 
         for program in pRoot.iter("Program"):
             name = program.attrib['Name']
-
-            if name.find("G0_POWER_SUPPLY")         != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G0_POWER_SUPPLY", machineNumber)
-                routineSpecifics = [{"Name" : "R20_Conditions", 
-                                     "Type" : "Replace",
-                                     "Rungs": ["0"]}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("G1_DEVICES_GENERAL")    != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "G1_DEVICES_GENERAL", 
-                                                                        machineNumber)})
-            elif name.find("G2_POWER_SUPPLY_DC")    != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "G2_POWER_SUPPLY_DC", 
-                                                                        machineNumber)})
-            elif name.find("G3_PLC")                != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G3_PLC", machineNumber)
-                routineSpecifics = [{"Name" : "R10_BootCycle",
-                                     "Type" : "Keep",
-                                     "Rungs": ["2"]}, 
-                                    {"Name" : "R11_MotionGroup",
-                                     "Type" : "Keep",
-                                     "Rungs": ["1"]}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("G3_IO_TEST")           != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "G3_IO_TEST",        
-                                                                        machineNumber)})
-            elif name.find("G4_OPERATOR_INTERFACE") != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "G4_OPERATOR_INTERFACE",     
-                                                                        machineNumber)})
-            elif name.find("G5_BUS_STRUCTURES")     != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G5_BUS_STRUCTURES", machineNumber)
-                routineSpecifics = [{"Name" : "R22_PIO_Diagnostics",
-                                     "Type" : "Keep",
-                                     "Rungs": ["1"]},
-                                    {"Name" : "R00_S01_Init",
-                                     "Type" : "KeepWhole"}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("G6_SAFETY_UNITS")       != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G6_SAFETY_UNITS", machineNumber)
-                routineSpecifics = [{"Name" : "R10_EStop",
-                                     "Type" : "Keep",
-                                     "Rungs": ["3"]}, 
-                                    {"Name" : "R11_SafetyGuards",
-                                     "Type" : "Replace",
-                                     "Rungs": ["0","1","2","3","4","5","7","8","9","10","11","12"]},
-                                    {"Name" : "R20_Conditions",
-                                     "Type" : "Replace",
-                                     "Rungs": ["0","1","3"]}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("G7_CONTROL_CIRCUIT")    != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G7_CONTROL_CIRCUIT", machineNumber)
-                routineSpecifics = [{"Name" : "R30_M001_MainAirValve",
-                                     "Type" : "Keep",
-                                     "Rungs": ["1"]}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("G9_INTERCONNECTIONS")   != -1:
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "G9_INTERCONNECTIONS", 
-                                                                        machineNumber)})
-            elif name.find("G9_SCADA")              != -1:
-                replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
-                routineSpecifics = [{"Name" : "R03_Parameter_Handler",
-                                     "Type" : "KeepWhole"}]
-                changes.append({'original'      :   program,
-                                'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                replacemenProgram, 
-                                                                                routineSpecifics)})
-            elif name.find("05_CHECK_SA")           != -1:
-                changes.append({'original'      :   program, 
-                                'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                        "05_CHECK_SA",       
-                                                                        machineNumber)})
-            else:
-                if len(name.split("_")[1]) == 5:
-                    print("station")
-                else:
-                    replacemenProgram = replaceWholeProgram(tRoot, "G9_SCADA", machineNumber)
-                    routineSpecifics = [{"Name" : "MainRoutine",
-                                         "Type" : "KeepWhole"},
-                                        {"Name" : "R00_S01_Init",
-                                         "Type" : "KeepWhole"},
-                                        {"Name" : "R20_Conditions",
-                                         "Type" : "KeepWhole"},
-                                        {"Name" : "R20_MachineCtrl",
-                                         "Type" : "KeepWhole"},
-                                        {"Name" : "R60_EmptyRun",
-                                         "Type" : "KeepWhole"},
-                                        {"Name" : "R95_Counter",
-                                         "Type" : "Replace",
-                                         "Rungs": ["0", "1"]}]
-                    changes.append({'original'      :   program,
-                                    'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                    replacemenProgram, 
-                                                                                    routineSpecifics)})
+            for filterProgram in data:
+                if name.find(filterProgram["Name"]) != -1:
+                    if filterProgram["Routines"][0] == 'All':
+                        changes.append({'original'      :   program,
+                                        'replacement'   :   replaceWholeProgram(tRoot, 
+                                                                                filterProgram['Name'], 
+                                                                                machineNumber)})
+                    else:
+                        routineSpecifics = []
+                        for routineSpecific in filterProgram["Routines"]:
+                            routineSpecifics.append(routineSpecific)
+                        replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber)
+                        changes.append({'original'      :   program,
+                                        'replacement'   :   replaceSpecificRoutineRungs(program,
+                                                                                        replacementProgram, 
+                                                                                        routineSpecifics)})
         for change in changes:
             parent = change['original'].getparent()
             parent.replace(change['original'], change['replacement'])

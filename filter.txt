@@ -1,0 +1,47 @@
+G0_POWER_SUPPLY
+R20_Conditions, Replace, 0
+
+G1_DEVICES_GENERAL
+All
+
+G2_POWER_SUPPLY_DC
+All
+
+G3_PLC
+R10_BootCycle, Keep, 2
+R11_MotionGroup, Keep, 1
+
+G3_IO_TEST
+All
+
+G4_OPERATOR_INTERFACE
+All
+
+G5_BUS_STRUCTURES
+R22_PIO_Diagnostics, Keep, 1
+R00_S01_Init, KeepWhole
+
+G6_SAFETY_UNITS
+R10_EStop, Keep, 3
+R11_SafetyGuards, Replace, 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12
+R20_Conditions, Replace, 0, 1, 3
+
+G7_CONTROL_CIRCUIT
+R30_M001_MainAirValve, Keep, 1
+
+G9_INTERCONNECTIONS
+All
+
+G9_SCADA
+R03_Parameter_Handler, KeepWhole
+
+05_CHECK_SA
+All
+
+MACHINE_NAME
+MainRoutine, KeepWhole
+R00_S01_Init, KeepWhole
+R20_Conditions, KeepWhole
+R20_MachineCtrl, KeepWhole
+R60_EmptyRun, KeepWhole
+R95_Counter, Replace, 0, 1
