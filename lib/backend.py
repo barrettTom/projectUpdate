@@ -102,8 +102,6 @@ def findRung(routine, rungNumber):
             return rung
 
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
-    changes = []
-        
     routine = findRoutine(program, routineNameAndRungs["Name"])
     replacementRoutine = findRoutine(replacementProgram, routineNameAndRungs["Name"])
 
@@ -119,8 +117,6 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     return program
 
 def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
-    changes = []
-
     routine = findRoutine(program, routineNameAndRungs["Name"])
     replacementRoutine = findRoutine(replacementProgram, routineNameAndRungs["Name"])
 
@@ -133,11 +129,7 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
             if not skip:
                 for replacementRung in replacementRoutine.iter("Rung"):
                     if rung.attrib["Number"] == replacementRung.attrib["Number"]:
-                        changes.append({'original'      :   rung,
-                                        'replacement'   :   replacementRung})
-
-    for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
+                        parent = rung.getparent()
+                        parent.replace(rung, replacementRung)
 
     return program
