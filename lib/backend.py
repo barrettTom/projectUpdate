@@ -54,27 +54,6 @@ def replaceWholeProgram(template, find, machineNumber, machineName):
 
     return program
 
-def replaceAllButSpecificRoutines(program, replacementProgram, routineNamesToSkip):
-    changes = []
-
-    for routine in program.iter("Routine"):
-        skip = False
-        for routineNameToSkip in routineNamesToSkip:
-            if routine.attrib['Name'] == routineNameToSkip:
-                skip = True
-        
-        if not skip:
-            for replacementRoutine in replacementProgram.iter("Routine"):
-                if routine.attrib['Name'] == replacementRoutine.attrib['Name']:
-                    changes.append({'original'      : routine,
-                                    'replacement'   : replacementRoutine})
-
-    for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
-
-    return program
-
 def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRungs):
     changes = []
     for routine in program.iter("Routine"):
