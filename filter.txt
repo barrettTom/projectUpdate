@@ -53,6 +53,6 @@ R01_IF_In, Keep, 2, 4
 R90_ProductTracking_Out, Keep, 1
 R91_IF_Out, Keep, 3, 10
 M00, Replace, 1
-R21_Sequence_Referencing, Replace, 0, 1, 2, 4, 5, -1, -2
-R25_Sequence_Main, Replace, 0, -1, -2
-R26_Sequence_Processing, Replace, 0, -1, -2
+R21_Sequence_Referencing, Replace, 0, 1, 2, 4, 5
+R25_Sequence_Main, Replace, 0
+R26_Sequence_Processing, Replace, 0

@@ -46,12 +46,6 @@ def findRung(routine, rungNumber):
         if rung.attrib["Number"] == rungNumber:
             return rung
 
-def negativeFix(number, routine):
-    if int(number) >= 0:
-        return number
-    else:
-        return len(routine.findall("*/Rung")) - 1 + int(number)
-
 def getTemplateProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
         if templateProgram.attrib["Name"].find(find) != -1:
@@ -91,9 +85,8 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
 
     if routine is not None and replacementRoutine is not None:
         for rungNumber in routineNameAndRungs["Rungs"]:
-            fixedNumber = negativeFix(rungNumber, routine)
-            rung = findRung(routine, fixedNumber)
-            replacementRung = findRung(replacementRoutine, fixedNumber)
+            rung = findRung(routine, rungNumber)
+            replacementRung = findRung(replacementRoutine, rungNumber)
             if rung is not None and replacementRung is not None:
                 rung.getparent().replace(rung, replacementRung)
 
@@ -104,10 +97,8 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
     if routine is not None and replacementRoutine is not None:
         for rung in routine.iter("Rung"):
             skip = False
-            numbers = [negativeFix(rungNumber, routine) for rungNumber in routineNameAndRungs["Rungs"]]
-            if rung.attrib["Number"] in numbers:
+            if rung.attrib["Number"] in routineNameAndRungs["Rungs"]:
                 skip = True
             if not skip:
-                for replacementRung in replacementRoutine.iter("Rung"):
-                    if rung.attrib["Number"] == replacementRung.attrib["Number"]:
-                        rung.getparent().replace(rung, replacementRung)
+                replacementRung = findRung(replacementRoutine, rung.attrib["Number"])
+                rung.getparent().replace(rung, replacementRung)
