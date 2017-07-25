@@ -115,15 +115,8 @@ class projectUpdate(QWidget):
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
 
-        changes = []
-
-        original, replacement = aoiReplace(pRoot, tRoot)
-        changes.append({'original'      : original,
-                        'replacement'   : replacement})
-
-        original, replacement = udtReplace(pRoot, tRoot)
-        changes.append({'original'      : original,
-                        'replacement'   : replacement})
+        aoiReplace(pRoot, tRoot)
+        udtReplace(pRoot, tRoot)
 
         machineNumber, machineName = getMachineInfo(pRoot)
 
@@ -136,20 +129,14 @@ class projectUpdate(QWidget):
                 if name.find(filterProgram["Name"]) != -1:
                     found = True
                     if filterProgram["Routines"][0] == 'All':
-                        changes.append({'original'      :   program,
-                                        'replacement'   :   replaceWholeProgram(tRoot, 
-                                                                                filterProgram['Name'], 
-                                                                                machineNumber,
-                                                                                machineName)})
+                        program.getparent().replace(program, replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName))
                     else:
                         routineSpecifics = []
                         for routineSpecific in filterProgram["Routines"]:
                             routineSpecifics.append(routineSpecific)
                         replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                        changes.append({'original'      :   program,
-                                        'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                        replacementProgram, 
-                                                                                        routineSpecifics)})
+                        program.getparent().replace(program, replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics))
+
             if not found:
                 if len(name.split("_")[1]) == 3:
                     for filterProgram in filterPrograms:
@@ -158,10 +145,7 @@ class projectUpdate(QWidget):
                             for routineSpecific in filterProgram["Routines"]:
                                 routineSpecifics.append(routineSpecific)
                             replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            changes.append({'original'      :   program,
-                                            'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                            replacementProgram, 
-                                                                                            routineSpecifics)})
+                            program.getparent().replace(program, replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics))
                 else:
                     for filterProgram in filterPrograms:
                         if filterProgram["Name"] == "STATION":
@@ -169,13 +153,7 @@ class projectUpdate(QWidget):
                             for routineSpecific in filterProgram["Routines"]:
                                 routineSpecifics.append(routineSpecific)
                             replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            changes.append({'original'      :   program,
-                                            'replacement'   :   replaceSpecificRoutineRungs(program,
-                                                                                            replacementProgram, 
-                                                                                            routineSpecifics)})
-        for change in changes:
-            parent = change['original'].getparent()
-            parent.replace(change['original'], change['replacement'])
+                            program.getparent().replace(program, replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics))
 
         return pTree
 

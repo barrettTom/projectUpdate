@@ -18,7 +18,7 @@ def aoiReplace(project, template):
     for aoi in save:
         tAois.append(aoi)
 
-    return pAois, tAois
+    pAois.getparent().replace(pAois, tAois)
 
 def udtReplace(project, template):
     save = []
@@ -34,7 +34,7 @@ def udtReplace(project, template):
     for udt in save:
         tUdts.append(udt)
 
-    return pUdts, tUdts
+    pUdts.getparent().replace(pUdts, tUdts)
 
 def replaceWholeProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
