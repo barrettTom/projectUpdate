@@ -84,16 +84,11 @@ def negativeFix(number, routine):
     if int(number) >= 0:
         return number
     else:
-        last = 0
-        for rung in routine.iter("Rung"):
-            if last < int(rung.attrib["Number"]):
-                last = int(rung.attrib["Number"])
-
-        return int(last) + int(number)
+        return len(routine.findall("*/Rung")) - 1 + int(number)
 
 def findRoutine(program, routineName):
     for routine in program.iter("Routine"):
-        if routine.attrib['Name'] == routineName:
+        if routine.attrib['Name'].find(routineName) != -1:
             return routine
 
 def findRung(routine, rungNumber):
