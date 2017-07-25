@@ -80,12 +80,12 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
     
     return program
 
-def negativeFix(number, routine, replacementRoutine):
+def negativeFix(number, routine):
     if int(number) >= 0:
         return number
     else:
         last = 0
-        for rung in replacementRoutine.iter("Rung"):
+        for rung in routine.iter("Rung"):
             if last < int(rung.attrib["Number"]):
                 last = int(rung.attrib["Number"])
 
@@ -109,7 +109,7 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
 
     if routine is not None and replacementRoutine is not None:
         for rungNumber in routineNameAndRungs["Rungs"]:
-            fixedNumber = negativeFix(rungNumber, routine, replacementRoutine)
+            fixedNumber = negativeFix(rungNumber, routine)
             rung = findRung(routine, fixedNumber)
             replacementRung = findRung(replacementRoutine, fixedNumber)
             if rung is not None and replacementRung is not None:
@@ -127,10 +127,9 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
     if routine is not None and replacementRoutine is not None:
         for rung in routine.iter("Rung"):
             skip = False
-            for rungNumber in routineNameAndRungs["Rungs"]:
-                number = negativeFix(rungNumber, routine, replacementRoutine)
-                if rung.attrib["Number"] == rungNumber:
-                    skip = True
+            numbers = [negativeFix(rungNumber, routine) for rungNumber in routineNameAndRungs["Rungs"]]
+            if rung.attrib["Number"] in numbers:
+                skip = True
             if not skip:
                 for replacementRung in replacementRoutine.iter("Rung"):
                     if rung.attrib["Number"] == replacementRung.attrib["Number"]:
