@@ -36,7 +36,7 @@ def udtReplace(project, template):
 
     pUdts.getparent().replace(pUdts, tUdts)
 
-def replaceWholeProgram(template, find, machineNumber, machineName):
+def getTemplateProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
         if templateProgram.attrib["Name"].find(find) != -1:
             program = templateProgram
