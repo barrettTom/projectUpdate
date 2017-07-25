@@ -131,23 +131,20 @@ class projectUpdate(QWidget):
                         program.getparent().replace(program, replacementProgram)
 
                     else:
-                        routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                         replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                        replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
+                        replaceSpecificRoutineRungs(program, replacementProgram, filterProgram["Routines"])
 
             if not found:
                 if len(name.split("_")[1]) == 3:
                     for filterProgram in filterPrograms:
                         if filterProgram["Name"] == "MACHINE_NAME":
-                            routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                             replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
+                            replaceSpecificRoutineRungs(program, replacementProgram, filterProgram["Routines"])
                 else:
                     for filterProgram in filterPrograms:
                         if filterProgram["Name"] == "STATION":
-                            routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                             replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
+                            replaceSpecificRoutineRungs(program, replacementProgram, filterProgram["Routines"])
 
         return pTree
 
