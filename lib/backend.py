@@ -59,9 +59,8 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
     for routine in program.iter("Routine"):
         skip = False
         for routineNameAndRungs in routineNamesAndRungs:
-            if routine.attrib["Name"] == routineNameAndRungs["Name"]:
+            if routine.attrib["Name"].find(routineNameAndRungs["Name"]) != -1:
                 skip = True
-
         if not skip:
             for replacementRoutine in replacementProgram.iter("Routine"):
                 if routine.attrib["Name"] == replacementRoutine.attrib["Name"]:
@@ -81,6 +80,17 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
     
     return program
 
+def negativeFix(number, routine, replacementRoutine):
+    if int(number) >= 0:
+        return number
+    else:
+        n = 0
+        for rung in replacementRoutine.iter("Rung"):
+            if n < int(rung.attrib["Number"]):
+                n = int(rung.attrib["Number"])
+
+        return int(n) + int(number)
+
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
 
@@ -90,6 +100,7 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
                 for rung in routine.iter("Rung"):
                     for replacementRung in replacementRoutine.iter("Rung"):
                         for rungNumber in routineNameAndRungs["Rungs"]:
+                            number = negativeFix(rungNumber, routine, replacementRoutine)
                             if rung.attrib["Number"] == replacementRung.attrib["Number"] == rungNumber:
                                 changes.append({'original'      :   rung,
                                                 'replacement'   :   replacementRung})
@@ -100,7 +111,6 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
 
     return program
 
-
 def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
 
@@ -110,6 +120,7 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
                 for rung in routine.iter("Rung"):
                     skip = False
                     for rungNumber in routineNameAndRungs["Rungs"]:
+                        number = negativeFix(rungNumber, routine, replacementRoutine)
                         if rung.attrib["Number"] == rungNumber:
                             skip = True
                     if not skip:

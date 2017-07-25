@@ -163,8 +163,16 @@ class projectUpdate(QWidget):
                                                                                             replacementProgram, 
                                                                                             routineSpecifics)})
                 else:
-                    print(name,"station")
-
+                    for filterProgram in filterPrograms:
+                        if filterProgram["Name"] == "STATION":
+                            routineSpecifics = []
+                            for routineSpecific in filterProgram["Routines"]:
+                                routineSpecifics.append(routineSpecific)
+                            replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
+                            changes.append({'original'      :   program,
+                                            'replacement'   :   replaceSpecificRoutineRungs(program,
+                                                                                            replacementProgram, 
+                                                                                            routineSpecifics)})
         for change in changes:
             parent = change['original'].getparent()
             parent.replace(change['original'], change['replacement'])
