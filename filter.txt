@@ -36,7 +36,7 @@ G9_SCADA
 R03_Parameter_Handler, KeepWhole
 
 05_CHECK_SA
-All
+R20_Conditions, Keep, 3, 4
 
 MACHINE_NAME
 MainRoutine, KeepWhole
