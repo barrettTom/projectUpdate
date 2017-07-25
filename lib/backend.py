@@ -84,26 +84,32 @@ def negativeFix(number, routine, replacementRoutine):
     if int(number) >= 0:
         return number
     else:
-        n = 0
+        last = 0
         for rung in replacementRoutine.iter("Rung"):
-            if n < int(rung.attrib["Number"]):
-                n = int(rung.attrib["Number"])
+            if last < int(rung.attrib["Number"]):
+                last = int(rung.attrib["Number"])
 
-        return int(n) + int(number)
+        return int(last) + int(number)
+
+def findRoutine(program, routineName):
+    for routine in program.iter("Routine"):
+        if routine.attrib['Name'] == routineName:
+            return routine
 
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
+        
+    routine = findRoutine(program, routineNameAndRungs["Name"])
+    replacementRoutine = findRoutine(replacementProgram, routineNameAndRungs["Name"])
 
-    for routine in program.iter("Routine"):
-        for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == replacementRoutine.attrib["Name"] == routineNameAndRungs["Name"]:
-                for rung in routine.iter("Rung"):
-                    for replacementRung in replacementRoutine.iter("Rung"):
-                        for rungNumber in routineNameAndRungs["Rungs"]:
-                            number = negativeFix(rungNumber, routine, replacementRoutine)
-                            if rung.attrib["Number"] == replacementRung.attrib["Number"] == rungNumber:
-                                changes.append({'original'      :   rung,
-                                                'replacement'   :   replacementRung})
+    if routine is not None and replacementRoutine is not None:
+        for rung in routine.iter("Rung"):
+            for replacementRung in replacementRoutine.iter("Rung"):
+                for rungNumber in routineNameAndRungs["Rungs"]:
+                    number = negativeFix(rungNumber, routine, replacementRoutine)
+                    if rung.attrib["Number"] == replacementRung.attrib["Number"] == rungNumber:
+                        changes.append({'original'      :   rung,
+                                        'replacement'   :   replacementRung})
 
     for change in changes:
         parent = change['original'].getparent()
@@ -114,20 +120,21 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
 def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
 
-    for routine in program.iter("Routine"):
-        for replacementRoutine in replacementProgram.iter("Routine"):
-            if routine.attrib['Name'] == replacementRoutine.attrib["Name"] == routineNameAndRungs["Name"]:
-                for rung in routine.iter("Rung"):
-                    skip = False
-                    for rungNumber in routineNameAndRungs["Rungs"]:
-                        number = negativeFix(rungNumber, routine, replacementRoutine)
-                        if rung.attrib["Number"] == rungNumber:
-                            skip = True
-                    if not skip:
-                        for replacementRung in replacementRoutine.iter("Rung"):
-                            if rung.attrib["Number"] == replacementRung.attrib["Number"]:
-                                changes.append({'original'      :   rung,
-                                                'replacement'   :   replacementRung})
+    routine = findRoutine(program, routineNameAndRungs["Name"])
+    replacementRoutine = findRoutine(replacementProgram, routineNameAndRungs["Name"])
+
+    if routine is not None and replacementRoutine is not None:
+        for rung in routine.iter("Rung"):
+            skip = False
+            for rungNumber in routineNameAndRungs["Rungs"]:
+                number = negativeFix(rungNumber, routine, replacementRoutine)
+                if rung.attrib["Number"] == rungNumber:
+                    skip = True
+            if not skip:
+                for replacementRung in replacementRoutine.iter("Rung"):
+                    if rung.attrib["Number"] == replacementRung.attrib["Number"]:
+                        changes.append({'original'      :   rung,
+                                        'replacement'   :   replacementRung})
 
     for change in changes:
         parent = change['original'].getparent()
