@@ -113,12 +113,8 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
             rung = findRung(routine, fixedNumber)
             replacementRung = findRung(replacementRoutine, fixedNumber)
             if rung is not None and replacementRung is not None:
-                changes.append({'original'      :   rung,
-                                'replacement'   :   replacementRung})
-
-    for change in changes:
-        parent = change['original'].getparent()
-        parent.replace(change['original'], change['replacement'])
+                parent = rung.getparent()
+                parent.replace(rung, replacementRung)
 
     return program
 
