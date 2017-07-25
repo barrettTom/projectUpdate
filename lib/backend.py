@@ -36,6 +36,22 @@ def udtReplace(project, template):
 
     pUdts.getparent().replace(pUdts, tUdts)
 
+def findRoutine(program, routineName):
+    for routine in program.iter("Routine"):
+        if routine.attrib['Name'].find(routineName) != -1:
+            return routine
+
+def findRung(routine, rungNumber):
+    for rung in routine.iter("Rung"):
+        if rung.attrib["Number"] == rungNumber:
+            return rung
+
+def negativeFix(number, routine):
+    if int(number) >= 0:
+        return number
+    else:
+        return len(routine.findall("*/Rung")) - 1 + int(number)
+
 def getTemplateProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
         if templateProgram.attrib["Name"].find(find) != -1:
@@ -66,29 +82,12 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
 
     for routineNameAndRungs in routineNamesAndRungs:
         if routineNameAndRungs['Type'] == "Keep":
-            program = replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
+            replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
         elif routineNameAndRungs['Type'] == "Replace":
-            program = replaceSpecificRungs(program, replacementProgram, routineNameAndRungs)
+            replaceSpecificRungs(program, replacementProgram, routineNameAndRungs)
         elif routineNameAndRungs['Type'] == "KeepWhole":
             continue
-    
-    return program
 
-def negativeFix(number, routine):
-    if int(number) >= 0:
-        return number
-    else:
-        return len(routine.findall("*/Rung")) - 1 + int(number)
-
-def findRoutine(program, routineName):
-    for routine in program.iter("Routine"):
-        if routine.attrib['Name'].find(routineName) != -1:
-            return routine
-
-def findRung(routine, rungNumber):
-    for rung in routine.iter("Rung"):
-        if rung.attrib["Number"] == rungNumber:
-            return rung
 
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     routine = findRoutine(program, routineNameAndRungs["Name"])
@@ -102,8 +101,6 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
             if rung is not None and replacementRung is not None:
                 parent = rung.getparent()
                 parent.replace(rung, replacementRung)
-
-    return program
 
 def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
     routine = findRoutine(program, routineNameAndRungs["Name"])
@@ -120,5 +117,3 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
                     if rung.attrib["Number"] == replacementRung.attrib["Number"]:
                         parent = rung.getparent()
                         parent.replace(rung, replacementRung)
-
-    return program

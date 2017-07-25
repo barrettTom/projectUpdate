@@ -107,10 +107,8 @@ class projectUpdate(QWidget):
 
     def main(self, projectPath, templatePath):
 
-        parser = XMLParser(strip_cdata=False, resolve_entities=False)
-
-        pTree = parse(projectPath, parser=parser)
-        tTree = parse(templatePath, parser=parser)
+        pTree = parse(projectPath,  parser=XMLParser(strip_cdata=False))
+        tTree = parse(templatePath, parser=XMLParser(strip_cdata=False))
 
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
@@ -135,8 +133,7 @@ class projectUpdate(QWidget):
                     else:
                         routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                         replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                        replacementProgram = replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
-                        program.getparent().replace(program, replacementProgram)
+                        replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
 
             if not found:
                 if len(name.split("_")[1]) == 3:
@@ -144,15 +141,13 @@ class projectUpdate(QWidget):
                         if filterProgram["Name"] == "MACHINE_NAME":
                             routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                             replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            replacementProgram = replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
-                            program.getparent().replace(program, replacementProgram)
+                            replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
                 else:
                     for filterProgram in filterPrograms:
                         if filterProgram["Name"] == "STATION":
                             routineSpecifics = [routineSpecific for routineSpecific in filterProgram["Routines"]]
                             replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
-                            replacementProgram = replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
-                            program.getparent().replace(program, replacementProgram)
+                            replaceSpecificRoutineRungs(program, replacementProgram, routineSpecifics)
 
         return pTree
 
