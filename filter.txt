@@ -18,8 +18,8 @@ G4_OPERATOR_INTERFACE
 All
 
 G5_BUS_STRUCTURES
-R22_PIO_Diagnostics, Keep, 1
 R00_S01_Init, KeepWhole
+R22_PIO_Diagnostics, Keep, 1
 
 G6_SAFETY_UNITS
 R10_EStop, Keep, 3
@@ -45,3 +45,10 @@ R20_Conditions, KeepWhole
 R20_MachineCtrl, KeepWhole
 R60_EmptyRun, KeepWhole
 R95_Counter, Replace, 0, 1
+
+STATION
+R00_S01_Init, KeepWhole
+MainRoutine, KeepWhole
+R01_IF_In, Keep, 2, 4
+R90_ProductTracking_Out, Keep, 1
+R91_IF_Out, Keep, 3, 10

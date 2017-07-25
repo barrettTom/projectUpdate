@@ -10,7 +10,7 @@ import codecs
 import os
 
 from lib.backend import aoiReplace, udtReplace, replaceWholeProgram
-from lib.backend import replaceSpecificRoutineRungs
+from lib.backend import replaceSpecificRoutineRungs, getMachineInfo
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -125,7 +125,7 @@ class projectUpdate(QWidget):
         changes.append({'original'      : original,
                         'replacement'   : replacement})
 
-        machineNumber = pRoot.base.split("_")[1][:3]
+        machineNumber, machineName = getMachineInfo(pRoot)
 
         filterPrograms = self.readFilter()
 
@@ -139,12 +139,13 @@ class projectUpdate(QWidget):
                         changes.append({'original'      :   program,
                                         'replacement'   :   replaceWholeProgram(tRoot, 
                                                                                 filterProgram['Name'], 
-                                                                                machineNumber)})
+                                                                                machineNumber,
+                                                                                machineName)})
                     else:
                         routineSpecifics = []
                         for routineSpecific in filterProgram["Routines"]:
                             routineSpecifics.append(routineSpecific)
-                        replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber)
+                        replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
                         changes.append({'original'      :   program,
                                         'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                         replacementProgram, 
@@ -156,7 +157,7 @@ class projectUpdate(QWidget):
                             routineSpecifics = []
                             for routineSpecific in filterProgram["Routines"]:
                                 routineSpecifics.append(routineSpecific)
-                            replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber)
+                            replacementProgram = replaceWholeProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
                             changes.append({'original'      :   program,
                                             'replacement'   :   replaceSpecificRoutineRungs(program,
                                                                                             replacementProgram, 

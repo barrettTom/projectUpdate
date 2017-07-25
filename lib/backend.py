@@ -2,6 +2,12 @@
 
 from lxml.etree import tostring, fromstring, XMLParser
 
+def getMachineInfo(pRoot):
+    for program in pRoot.iter("Program"):
+        name = program.attrib["Name"].split("_")
+        if len(name[1]) == 3:
+            return name[1], "_".join(name[2:])
+
 def aoiReplace(project, template):
     save = []
     for aoi in project.iter("AddOnInstructionDefinition"):
@@ -32,7 +38,7 @@ def udtReplace(project, template):
 
     return pUdts, tUdts
 
-def replaceWholeProgram(template, find, machineNumber):
+def replaceWholeProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
         if templateProgram.attrib["Name"].find(find) != -1:
             program = templateProgram
@@ -42,6 +48,7 @@ def replaceWholeProgram(template, find, machineNumber):
     string = tostring(program)
 
     string = string.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
+    string = string.replace(b"MACHINE_NAME", bytes(machineName, encoding="utf-8"))
 
     program = fromstring(string, parser = parser)
 
