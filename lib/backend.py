@@ -96,6 +96,11 @@ def findRoutine(program, routineName):
         if routine.attrib['Name'] == routineName:
             return routine
 
+def findRung(routine, rungNumber):
+    for rung in routine.iter("Rung"):
+        if rung.attrib["Number"] == rungNumber:
+            return rung
+
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     changes = []
         
@@ -103,13 +108,13 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     replacementRoutine = findRoutine(replacementProgram, routineNameAndRungs["Name"])
 
     if routine is not None and replacementRoutine is not None:
-        for rung in routine.iter("Rung"):
-            for replacementRung in replacementRoutine.iter("Rung"):
-                for rungNumber in routineNameAndRungs["Rungs"]:
-                    number = negativeFix(rungNumber, routine, replacementRoutine)
-                    if rung.attrib["Number"] == replacementRung.attrib["Number"] == rungNumber:
-                        changes.append({'original'      :   rung,
-                                        'replacement'   :   replacementRung})
+        for rungNumber in routineNameAndRungs["Rungs"]:
+            fixedNumber = negativeFix(rungNumber, routine, replacementRoutine)
+            rung = findRung(routine, fixedNumber)
+            replacementRung = findRung(replacementRoutine, fixedNumber)
+            if rung is not None and replacementRung is not None:
+                changes.append({'original'      :   rung,
+                                'replacement'   :   replacementRung})
 
     for change in changes:
         parent = change['original'].getparent()
