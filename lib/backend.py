@@ -57,14 +57,12 @@ def getTemplateProgram(template, find, machineNumber, machineName):
         if templateProgram.attrib["Name"].find(find) != -1:
             program = templateProgram
 
-    parser = XMLParser(strip_cdata=False, resolve_entities=False)
-
     string = tostring(program)
 
     string = string.replace(b"XXX", bytes(machineNumber, encoding="utf-8"))
     string = string.replace(b"MACHINE_NAME", bytes(machineName, encoding="utf-8"))
 
-    program = fromstring(string, parser = parser)
+    program = fromstring(string, parser = XMLParser(strip_cdata=False))
 
     return program
 
@@ -77,8 +75,7 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
         if not skip:
             for replacementRoutine in replacementProgram.iter("Routine"):
                 if routine.attrib["Name"] == replacementRoutine.attrib["Name"]:
-                    parent = routine.getparent()
-                    parent.replace(routine, replacementRoutine)
+                    routine.getparent().replace(routine, replacementRoutine)
 
     for routineNameAndRungs in routineNamesAndRungs:
         if routineNameAndRungs['Type'] == "Keep":
@@ -87,7 +84,6 @@ def replaceSpecificRoutineRungs(program, replacementProgram, routineNamesAndRung
             replaceSpecificRungs(program, replacementProgram, routineNameAndRungs)
         elif routineNameAndRungs['Type'] == "KeepWhole":
             continue
-
 
 def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
     routine = findRoutine(program, routineNameAndRungs["Name"])
@@ -99,8 +95,7 @@ def replaceSpecificRungs(program, replacementProgram, routineNameAndRungs):
             rung = findRung(routine, fixedNumber)
             replacementRung = findRung(replacementRoutine, fixedNumber)
             if rung is not None and replacementRung is not None:
-                parent = rung.getparent()
-                parent.replace(rung, replacementRung)
+                rung.getparent().replace(rung, replacementRung)
 
 def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs):
     routine = findRoutine(program, routineNameAndRungs["Name"])
@@ -115,5 +110,4 @@ def replaceAllButSpecificRungs(program, replacementProgram, routineNameAndRungs)
             if not skip:
                 for replacementRung in replacementRoutine.iter("Rung"):
                     if rung.attrib["Number"] == replacementRung.attrib["Number"]:
-                        parent = rung.getparent()
-                        parent.replace(rung, replacementRung)
+                        rung.getparent().replace(rung, replacementRung)
