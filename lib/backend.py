@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from lxml.etree import tostring, fromstring, XMLParser
 
 def getMachineInfo(pRoot):
@@ -14,8 +12,8 @@ def aoiReplace(project, template):
         if aoi.attrib['Name'].find("Pinning")           != -1:
             save.append(aoi)
 
-    pAois = project.findall("Controller/AddOnInstructionDefinitions")[0]
-    tAois = template.findall("Controller/AddOnInstructionDefinitions")[0]
+    pAois = project.find("Controller/AddOnInstructionDefinitions")
+    tAois = template.find("Controller/AddOnInstructionDefinitions")
 
     for aoi in save:
         tAois.append(aoi)
@@ -30,8 +28,8 @@ def udtReplace(project, template):
         elif udt.attrib['Name'].find("StationResults")  != -1:
             save.append(udt)
 
-    pUdts = project.findall("Controller/DataTypes")[0]
-    tUdts = template.findall("Controller/DataTypes")[0]
+    pUdts = project.find("Controller/DataTypes")
+    tUdts = template.find("Controller/DataTypes")
     
     for udt in save:
         tUdts.append(udt)
