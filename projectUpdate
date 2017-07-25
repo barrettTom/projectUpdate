@@ -60,6 +60,7 @@ class projectUpdate(QWidget):
             with codecs.open(path, "w", "utf-8-sig") as targetFile:
                 contents = sourceFile.read()
                 contents = contents.replace("\n","\r\n")
+                contents = contents.replace("&#246;", "ö")
                 targetFile.write(contents)
 
         os.remove(path+"utf-8")
@@ -111,11 +112,9 @@ class projectUpdate(QWidget):
         pTree = parse(projectPath, parser=parser)
         tTree = parse(templatePath, parser=parser)
 
-        self.save("backup.L5X", pTree)
-
         pRoot = pTree.getroot()
         tRoot = tTree.getroot()
-        
+
         changes = []
 
         original, replacement = aoiReplace(pRoot, tRoot)
