@@ -124,7 +124,7 @@ class projectUpdate(QWidget):
             name = program.attrib['Name']
             found = False
             for filterProgram in filterPrograms:
-                if name.find(filterProgram["Name"]) != -1:
+                if filterProgram["Name"] in name:
                     found = True
                     if filterProgram["Routines"][0] == 'All':
                         replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)

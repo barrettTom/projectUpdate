@@ -9,7 +9,7 @@ def getMachineInfo(pRoot):
 def aoiReplace(project, template):
     save = []
     for aoi in project.iter("AddOnInstructionDefinition"):
-        if aoi.attrib['Name'].find("Pinning")           != -1:
+        if "Pinning" in aoi.attrib['Name']:
             save.append(aoi)
 
     pAois = project.find("Controller/AddOnInstructionDefinitions")
@@ -23,9 +23,9 @@ def aoiReplace(project, template):
 def udtReplace(project, template):
     save = []
     for udt in project.iter("DataType"):
-        if udt.attrib['Name'].find("StationData")       != -1:
+        if "StationData" in udt.attrib['Name']:
             save.append(udt)
-        elif udt.attrib['Name'].find("StationResults")  != -1:
+        elif "StationResults" in udt.attrib['Name']:
             save.append(udt)
 
     pUdts = project.find("Controller/DataTypes")
@@ -38,7 +38,7 @@ def udtReplace(project, template):
 
 def findRoutine(program, routineName):
     for routine in program.iter("Routine"):
-        if routine.attrib['Name'].find(routineName) != -1:
+        if routineName in routine.attrib['Name']:
             return routine
 
 def findRung(routine, rungNumber):
@@ -48,7 +48,7 @@ def findRung(routine, rungNumber):
 
 def getTemplateProgram(template, find, machineNumber, machineName):
     for templateProgram in template.iter("Program"):
-        if templateProgram.attrib["Name"].find(find) != -1:
+        if find in templateProgram.attrib["Name"]:
             program = templateProgram
 
     string = tostring(program)
@@ -64,7 +64,7 @@ def replaceRoutines(program, replacementProgram, routineNamesAndRungs):
     for routine in program.iter("Routine"):
         skip = False
         for routineNameAndRungs in routineNamesAndRungs:
-            if routine.attrib["Name"].find(routineNameAndRungs["Name"]) != -1:
+            if routineNameAndRungs["Name"] in routine.attrib["Name"]:
                 skip = True
         if not skip:
             for replacementRoutine in replacementProgram.iter("Routine"):
