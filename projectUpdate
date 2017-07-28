@@ -66,7 +66,7 @@ class projectUpdate(QWidget):
         os.remove(path+"utf-8")
 
     def update(self, path=None):
-        if not path: path = QFileDialog.getSaveFileName(self)[0]
+        if not path: path = QFileDialog.getSaveFileName(self, filter="Studio 5000 XML (*.L5X)")[0]
         if path:
             updatedProject = self.main(self.projectEntry.text(), self.templateEntry.text())
 
@@ -145,7 +145,6 @@ class projectUpdate(QWidget):
                         if filterProgram["Name"] == "STATION":
                             replacementProgram = getTemplateProgram(tRoot, filterProgram['Name'], machineNumber, machineName)
                             replaceRoutines(program, replacementProgram, filterProgram["Routines"])
-
         return pTree
 
 app = QApplication(sys.argv)
