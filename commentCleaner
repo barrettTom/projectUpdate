@@ -1,0 +1,59 @@
+#!/usr/bin/python3
+
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog
+
+from lxml.etree import parse, XMLParser, CDATA
+
+import sys
+import codecs
+import os
+
+class commentCleaner(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        grid = QGridLayout()
+        self.setLayout(grid)
+
+        grid.addWidget(QLabel("Project:")   ,0,0)
+        self.projectEntry = QLineEdit()
+        grid.addWidget(self.projectEntry    ,0,1)
+        self.projectButton = QPushButton("...")
+        self.projectButton.clicked.connect(self.openProject)
+        grid.addWidget(self.projectButton   ,0,2)
+
+        self.cleanButton = QPushButton("Clean...")
+        self.cleanButton.clicked.connect(self.clean)
+        grid.addWidget(self.cleanButton     ,4,1)
+
+        self.show()
+
+    def openProject(self):
+        path = QFileDialog.getOpenFileName(self)[0]
+        self.projectEntry.setText(path)
+
+    def clean(self):
+        path = QFileDialog.getSaveFileName(self, filter="Studio 5000 XML (*.L5X)")[0]
+        if path:
+            tree = parse(self.projectEntry.text(),  parser=XMLParser(strip_cdata=False))
+
+            root = tree.getroot()
+
+            for comment in root.iter("Comment"):
+                comment.text = CDATA(comment.text.strip())
+
+            tree.write(path+"utf-8", encoding='utf-8', standalone=True)
+
+            with codecs.open(path+"utf-8", "r", "utf-8") as sourceFile:
+                with codecs.open(path, "w", "utf-8-sig") as targetFile:
+                    contents = sourceFile.read()
+                    contents = contents.replace("\n","\r\n")
+                    contents = contents.replace("&#246;", "ö")
+                    targetFile.write(contents)
+
+            os.remove(path+"utf-8")
+
+app = QApplication(sys.argv)
+masterView = commentCleaner()
+sys.exit(app.exec_())
+
