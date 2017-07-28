@@ -9,8 +9,8 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, getTemplateProgram
-from lib.backend import replaceRoutines, getMachineInfo
+from lib.backend import aoiReplace, udtReplace, tskReplace
+from lib.backend import replaceRoutines, getMachineInfo, getTemplateProgram
 
 class projectUpdate(QWidget):
     def __init__(self):
@@ -81,6 +81,10 @@ class projectUpdate(QWidget):
             lines = dataFile.readlines()
             i = 0
             while i < len(lines) - 1:
+                if "//" in lines[i]:
+                    i += 1
+                    continue
+
                 program = {"Name"       : lines[i].strip(),
                            "Routines"   : []}
                 while True:
@@ -89,6 +93,8 @@ class projectUpdate(QWidget):
                         break
                     if lines[i] == "\n":
                         break
+                    if "//" in lines[i]:
+                        continue
                     line = lines[i].split(",")
                     if len(line) == 1:
                         routine = line[0].strip()
@@ -115,6 +121,7 @@ class projectUpdate(QWidget):
 
         aoiReplace(pRoot, tRoot)
         udtReplace(pRoot, tRoot)
+        tskReplace(pRoot, tRoot)
 
         machineNumber, machineName = getMachineInfo(pRoot)
 

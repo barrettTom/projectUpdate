@@ -6,6 +6,18 @@ def getMachineInfo(pRoot):
         if len(name[1]) == 3:
             return name[1], "_".join(name[2:])
 
+def tskReplace(project, template):
+    for task in project.iter("Task"):
+        if task.attrib["Name"] == "T01_Main":
+            pTask = task
+
+    for task in template.iter("Task"):
+        if task.attrib["Name"] == "T01_Main":
+            tTask = task
+
+    pTask.attrib["Watchdog"] = tTask.attrib["Watchdog"]
+    pTask.attrib["Priority"] = tTask.attrib["Priority"]
+
 def aoiReplace(project, template):
     save = []
     for aoi in project.iter("AddOnInstructionDefinition"):
@@ -97,4 +109,5 @@ def replaceAllButSpecificRungs(routine, replacementRoutine, rungNumbers):
             skip = True
         if not skip:
             replacementRung = findRung(replacementRoutine, rung.attrib["Number"])
-            rung.getparent().replace(rung, replacementRung)
+            if replacementRung is not None:
+                rung.getparent().replace(rung, replacementRung)
