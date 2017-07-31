@@ -13,6 +13,8 @@ R11_MotionGroup, Keep, 1
 
 G3_IO_TEST
 R00_Init_IO_Test, KeepWhole
+R10_IO_Read, KeepWhole
+R40_IO_Write, KeepWhole
 
 G4_OPERATOR_INTERFACE
 All
