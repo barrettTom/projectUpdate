@@ -9,7 +9,7 @@ import sys
 import codecs
 import os
 
-from lib.backend import aoiReplace, udtReplace, tskReplace
+from lib.backend import aoiReplace, udtReplace, tskReplace, desReplace
 from lib.backend import replaceRoutines, getMachineInfo, getTemplateProgram
 
 class projectUpdate(QWidget):
@@ -124,6 +124,8 @@ class projectUpdate(QWidget):
         tskReplace(pRoot, tRoot)
 
         machineNumber, machineName = getMachineInfo(pRoot)
+        
+        desReplace(pRoot, tRoot, machineNumber)
 
         filterPrograms = self.readFilter()
 

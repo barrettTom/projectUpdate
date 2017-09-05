@@ -6,6 +6,12 @@ def getMachineInfo(pRoot):
         if len(name[1]) == 3:
             return name[1], "_".join(name[2:])
 
+def desReplace(project, template, machineNumber):
+    pDes = project.find("Controller/Description")
+    tDes = template.find("Controller/Description")
+
+    pDes.text = tDes.text.replace("XXX", machineNumber)
+
 def tskReplace(project, template):
     for task in project.iter("Task"):
         if task.attrib["Name"] == "T01_Main":
@@ -19,16 +25,8 @@ def tskReplace(project, template):
     pTask.attrib["Priority"] = tTask.attrib["Priority"]
 
 def aoiReplace(project, template):
-    save = []
-    for aoi in project.iter("AddOnInstructionDefinition"):
-        if "Pinning" in aoi.attrib['Name']:
-            save.append(aoi)
-
     pAois = project.find("Controller/AddOnInstructionDefinitions")
     tAois = template.find("Controller/AddOnInstructionDefinitions")
-
-    for aoi in save:
-        tAois.append(aoi)
 
     pAois.getparent().replace(pAois, tAois)
 
