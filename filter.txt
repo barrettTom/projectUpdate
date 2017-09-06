@@ -49,16 +49,28 @@ R20_MachineCtrl, KeepWhole
 R91_IF_Out, Replace, 0, 1, 2, 3, 4
 R95_Counter, Replace, 0, 1
 
+// 562, 606
+R01_IF_In, KeepWhole
+R91_IF_Out, KeepWhole
+R95_Counter, KeepWhole
+
 STATION
-R00_S01_Init, KeepWhole
 MainRoutine, KeepWhole
+R00_S01_Init, KeepWhole
 R01_IF_In, Keep, 2, 4
 R02_ProductTracking_In, Replace, 0
-// if not first time running updater uncomment next line
-// R20_Conditions, KeepWhole
-R90_ProductTracking_Out, Replace, 0, 2, 3, 4, 5, 7
-R91_IF_Out, Keep, 1, 3, 11
-M0, KeepWhole
 R21_Sequence_Referencing, Replace, 0, 1, 2, 4, 5
 R25_Sequence_Main, Replace, 0
 R26_Sequence_Processing, Replace, 0
+R90_ProductTracking_Out, Replace, 0, 2, 3, 4, 5, 7
+R91_IF_Out, Keep, 1, 3, 11
+M0, KeepWhole
+
+// First time comment
+// R20_Conditions, KeepWhole
+
+// 562, 606
+// R01_IF_In, KeepWhole
+// R90_ProductTracking_Out, KeepWhole
+// R91_IF_Out, KeepWhole
+// R95_Counter, KeepWhole
