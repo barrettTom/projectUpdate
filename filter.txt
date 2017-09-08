@@ -18,6 +18,8 @@ R40_IO_Write, KeepWhole
 
 G4_OPERATOR_INTERFACE
 All
+// If long led lamp
+// R30_SignalLedHorn, Keep, 3, 4, 5, 6
 
 G5_BUS_STRUCTURES
 R00_S01_Init, KeepWhole
